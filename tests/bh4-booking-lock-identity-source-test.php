@@ -11,7 +11,7 @@ function bh4_method_source($source, $start, $next) {
     return ($a !== false && $b !== false) ? substr($source, $a, $b - $a) : '';
 }
 $status = bh4_method_source($source, 'transition_booking_status', 'create_test_checkout');
-$checkout = bh4_method_source($source, 'create_test_checkout', 'verify_test_webhook');
+$checkout = bh4_method_source($source, 'create_test_checkout', 'inspect_booking_form_submission');
 $confirm = bh4_method_source($source, 'confirm_verified_test_payment', 'stripe_status');
 bh4_lock_check($status !== '' && $checkout !== '' && $confirm !== '', 'all three handler boundaries found');
 bh4_lock_check(strpos($status, "'bh3_status_' . md5(") !== false, 'status transition uses status lock');
