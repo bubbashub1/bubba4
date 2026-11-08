@@ -70,3 +70,5 @@ jobs:
         run: php tests/bh4-directory-query-plan-test.php
       - name: Isolated BH4 directory SELECT contract fixtures
         run: php tests/bh4-directory-select-contract-test.php
+      - name: Isolated BH4 directory SELECT response fixtures
+        run: php tests/bh4-directory-select-response-test.php
