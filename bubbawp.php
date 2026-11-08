@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubba Hub 4 — Safe Staging Preview
  * Description: Isolated BH4 activation preview. Does not load BH3 modules, alter tables, or handle bookings.
- * Version: 0.2.0-preview
+ * Version: 0.2.1-preview
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Bubba Hub South West
@@ -48,12 +48,13 @@ function bh4_render_preview_status() {
         }
         return false;
     };
+    $fluent_auth_detected = $active( 'fluent-auth' ) || $active( 'fluentauth' ) || $active( 'fluent-auth-security' );
     $dependencies = array(
         'Bubba Hub Manager 3.0' => $active( 'bubbawp' ) || class_exists( 'BH_Manager_3', false ),
         'Events Manager'        => $active( 'events-manager' ),
         'Ninja Forms'           => $active( 'ninja-forms' ),
         'Simple Membership'     => $active( 'simple-membership' ),
-        'FluentAuth'            => $active( 'fluent-auth' ),
+        'FluentAuth'            => $fluent_auth_detected,
         'FluentSMTP'            => $active( 'fluent-smtp' ),
     );
     $modules = array(
@@ -66,7 +67,7 @@ function bh4_render_preview_status() {
         'Membership integration',
     );
     echo '<div class="wrap"><h1>Bubba Hub 4 — Migration Dashboard</h1>';
-    echo '<p><strong>Safe preview 0.2.0.</strong> Bubba Hub 3.0 remains in control. This page does not change settings, database records, payments, or bookings.</p>';
+    echo '<p><strong>Safe preview 0.2.1.</strong> Bubba Hub 3.0 remains in control. This page does not change settings, database records, payments, or bookings.</p>';
     echo '<h2>Installed integration checks</h2>';
     echo '<p>These checks only detect active plugin slugs or the BH3 class. They do not prove integrations are configured or functional.</p>';
     echo '<table class="widefat striped"><thead><tr><th>Integration</th><th>Detected</th></tr></thead><tbody>';
