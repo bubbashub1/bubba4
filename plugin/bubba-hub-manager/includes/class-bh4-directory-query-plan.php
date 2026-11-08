@@ -11,7 +11,7 @@ final class BH4_Directory_Query_Plan {
         }
         $f = BH4_Directory_Filter_Contract::normalize( $filters );
         if ( $f instanceof WP_Error ) { return $f; }
-        foreach ( array( 'activities', 'sessions', 'venues', 'activity_venues' ) as $key ) {
+        foreach ( array( 'activities', 'sessions', 'venues', 'activity_venues', 'organisers' ) as $key ) {
             if ( ! isset( $tables[ $key ] ) || ! is_string( $tables[ $key ] ) || ! preg_match( '/^[A-Za-z0-9_]+$/D', $tables[ $key ] ) ) {
                 return new WP_Error( 'bh4_invalid_table', 'Unsafe or missing table identifier.' );
             }
@@ -19,8 +19,9 @@ final class BH4_Directory_Query_Plan {
         $conditions = array( "a.status IN ('published','publish')" );
         $params = array();
         if ( $f['search'] !== '' ) {
-            $conditions[] = '(a.title LIKE %s OR a.description LIKE %s)';
+            $conditions[] = '(a.title LIKE %s OR a.description LIKE %s OR EXISTS (SELECT 1 FROM `' . $tables['organisers'] . '` os WHERE os.id=a.organiser_id AND os.name LIKE %s))';
             $pattern = '%' . self::escape_like( $f['search'] ) . '%';
+            $params[] = $pattern;
             $params[] = $pattern;
             $params[] = $pattern;
         }
@@ -57,7 +58,7 @@ final class BH4_Directory_Query_Plan {
             'offset' => ( $f['page'] - 1 ) * $f['per_page'],
             'execution_allowed' => false,
             'source' => 'read_only_query_plan',
-            'limitations' => array( 'geo_and_organiser_keyword_not_yet_supported' ),
+            'limitations' => array( 'geo_radius_not_yet_supported' ),
         );
     }
     private static function escape_like( $value ) {
