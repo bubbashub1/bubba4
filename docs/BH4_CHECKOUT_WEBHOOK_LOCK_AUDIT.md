@@ -1,21 +1,25 @@
-# BH4 checkout and webhook lock audit — corrected source findings
+# BH4 checkout, webhook and expiry lock audit — current branch
 
-Reviewed `class-bh-marketplace-settings.php` on 2026-11-08. Source-only; no runtime changes.
+Source reviewed on 2026-11-08; no runtime payment tests or scheduler activation.
 
-## Actual lock ownership
-- `transition_booking_status()` (around line 614): `bh3_status_` + md5(database prefix, booking ID), with `finally` release.
-- `confirm_verified_test_payment()` (around line 2167): **the same `bh3_status_` lock**, with an under-lock payment recheck and guarded update. **Correction:** prior migration notes incorrectly described the webhook as using a separate confirmation lock. The webhook and admin status transitions already coordinate on this lock.
-- `create_test_checkout()` (around line 754): **different** `bh3_checkout_` lock. It checks payment state and session ID after acquiring the lock, but its booking state query does not select `booking_status`. A future expiry worker using `bh3_status_` cannot assume checkout creation is serialised with it.
-- `reserve_occurrence()`: per-session-occurrence `bh3_` capacity lock; retain this for capacity admission.
+## Verified current source
+- `create_test_checkout()` acquires the **shared `bh3_status_` booking lock**, then re-reads `booking_status`, `payment_status`, checkout session and reservation expiry. It requires `reserved/pending` and no recorded Checkout session.
+- `confirm_verified_test_payment()` uses the same `bh3_status_` lock and rechecks the payment state.
+- Administrative booking transitions use the `bh3_status_` lock. Per-occurrence capacity reservation uses its own capacity lock.
+- This corrects an **older checkout audit** that described checkout as using `bh3_checkout_`. That finding was superseded by later code changes. Do not rely on the older lock description.
 
-## Required design correction
-A future expiry worker should use the **existing `bh3_status_` lock** shared with webhook confirmation, not introduce an incompatible `bh4_booking_` lock while BH3 is running. The new `BH4_Booking_Shared_Lock_Contract` remains an unbootstrapped **proposal**, not a deployed lock identity.
+## Still blocked
+- A shared lock does not guarantee Stripe's remote response is recorded after a timeout. Idempotency replay, lost responses and ambiguous Checkout sessions still need reconciliation.
+- The external Stripe request may hold a lock longer than other operations wait; timeout/concurrency testing is required.
+- No expiry scheduler or automated reminder job should be enabled until Stripe state, event ledger, lock ordering and late webhook handling are proven under staging concurrency tests.
+- Existing test checkout is staging-only and gated by feature flags; do not switch to production keys.
 
-Before activating expiry:
-1. Bring checkout creation into the same booking-level lock domain or prove equivalent atomic safeguards.
-2. Recheck Stripe Checkout/payment and the event ledger under that lock.
-3. Require `reserved/pending`, elapsed hold and verified unpaid terminal Stripe state before an atomic expiry update.
-4. Confirm that late/async payment and retries cannot release an occupied place.
-5. Run real staging concurrency tests before enabling a scheduler.
+## Required staging checks
+1. Parallel checkout requests for the same booking.
+2. Webhook arriving while checkout is being created.
+3. Checkout timeout followed by safe idempotent retry.
+4. Expired unpaid Checkout session versus pending asynchronous payment.
+5. Delayed duplicate webhook and a manually confirmed/enrolled booking.
+6. Reservation expiry race with a successful payment; no released paid place.
 
-**Do not migrate lock names unilaterally.** Existing webhook/status coordination is a safety property worth preserving.
+No booking, database, cron, webhook or Stripe settings were changed in this audit.
