@@ -19,7 +19,7 @@ $bad['venues'] = 'wp_venues;DROP TABLE';
 check_plan( BH4_Directory_Query_Plan::build( array(), $bad ) instanceof WP_Error, 'unsafe table name rejected' );
 check_plan( BH4_Directory_Query_Plan::build( array( 'day' => 9 ), $tables ) instanceof WP_Error, 'invalid filter rejected' );
 $newborn = BH4_Directory_Query_Plan::build( array( 'age_months' => 0 ), $tables );
-check_plan( substr_count( $newborn['where'], 'age_min_months' ) === 1 && in_array( 0, $newborn['params'], true ), 'explicit newborn age applies age predicate' );
+check_plan( strpos( $newborn['where'], 'age_min_months <= %d' ) !== false && in_array( 0, $newborn['params'], true ), 'explicit newborn age applies age predicate' );
 $no_age = BH4_Directory_Query_Plan::build( array(), $tables );
 check_plan( strpos( $no_age['where'], 'age_min_months' ) === false, 'omitted age does not filter' );
 $town_order = BH4_Directory_Query_Plan::build( array( 'sort' => 'town' ), $tables );
