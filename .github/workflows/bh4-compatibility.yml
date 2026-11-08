@@ -79,6 +79,8 @@ jobs:
         run: php tests/bh4-form-7-8-compatibility-test.php
       - name: Isolated multi-attendee and capacity fixtures
         run: php tests/bh4-multi-attendee-selection-test.php
+      - name: Combined booking fee and hold expiry source guard
+        run: php tests/bh4-fee-and-expiry-source-test.php
       - name: Isolated BH4 booking reference fixtures
         run: php tests/bh4-booking-reference-test.php
       - name: Isolated BH4 activity API contract fixtures
