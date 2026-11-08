@@ -111,6 +111,8 @@ jobs:
         run: php tests/bh4-portal-shortcode-route-inventory-test.php
       - name: Manager bootstrap dependency integrity
         run: php tests/bh4-manager-bootstrap-dependencies-test.php
+      - name: Schema write entrypoint guard
+        run: php tests/bh4-schema-write-entrypoint-guard-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
