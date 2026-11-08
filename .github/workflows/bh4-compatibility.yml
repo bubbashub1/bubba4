@@ -76,3 +76,5 @@ jobs:
         run: php tests/bh4-directory-schema-check-test.php
       - name: Isolated BH4 directory result parity fixtures
         run: php tests/bh4-directory-parity-test.php
+      - name: Isolated BH4 directory public field parity fixtures
+        run: php tests/bh4-directory-field-parity-test.php
