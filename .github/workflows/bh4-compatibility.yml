@@ -74,3 +74,5 @@ jobs:
         run: php tests/bh4-directory-select-response-test.php
       - name: Isolated BH4 directory schema inventory fixtures
         run: php tests/bh4-directory-schema-check-test.php
+      - name: Isolated BH4 directory result parity fixtures
+        run: php tests/bh4-directory-parity-test.php
