@@ -23,6 +23,7 @@ final class BH4_Checkout_Recovery_Admin_Review {
    echo '<div class="wrap"><h1>Checkout Recovery Review</h1><p>Read-only review requires a valid link.</p></div>';
    return;
   }
+  require_once __DIR__ . '/class-bh4-checkout-recovery-triage.php';
   global $wpdb;
   $pattern=$wpdb->esc_like('bh4_checkout_recovery_').'%';
   $values=$wpdb->get_results($wpdb->prepare(
@@ -30,7 +31,7 @@ final class BH4_Checkout_Recovery_Admin_Review {
    $pattern
   ),ARRAY_A);
   echo '<div class="wrap"><h1>Checkout Recovery Review</h1><p>Read-only. Do not retry or refund from this page.</p>';
-  echo '<table class="widefat striped"><thead><tr><th>Booking ID</th><th>Recovery state</th><th>Created (UTC)</th><th>Session recorded</th></tr></thead><tbody>';
+  echo '<table class="widefat striped"><thead><tr><th>Booking ID</th><th>Priority</th><th>Investigation guidance</th><th>Recovery state</th><th>Created (UTC)</th><th>Session recorded</th></tr></thead><tbody>';
   foreach((array)$values as $row) {
    $id=(string)($row['option_name']??'');
    if(!preg_match('/^bh4_checkout_recovery_([1-9][0-9]*)$/D',$id,$match)) {continue;}
@@ -41,7 +42,9 @@ final class BH4_Checkout_Recovery_Admin_Review {
    $created=isset($record['created_at'])&&is_int($record['created_at'])&&$record['created_at']>0?
     gmdate('Y-m-d H:i',$record['created_at']):'Unknown';
    $session=!empty($record['session_id'])?'Yes':'No';
-   echo '<tr><td>'.esc_html($match[1]).'</td><td>'.esc_html($state).
+   $triage=BH4_Checkout_Recovery_Triage::classify($record,time());
+   echo '<tr><td>'.esc_html($match[1]).'</td><td>'.esc_html($triage['priority']).
+    '</td><td>'.esc_html($triage['label']).'</td><td>'.esc_html($state).
     '</td><td>'.esc_html($created).'</td><td>'.esc_html($session).'</td></tr>';
   }
   echo '</tbody></table></div>';
