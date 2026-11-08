@@ -131,6 +131,8 @@ jobs:
         run: php tests/bh4-checkout-recovery-atomic-writer-test.php
       - name: Recovery storage adapter integration fixtures
         run: php tests/bh4-checkout-recovery-storage-integration-test.php
+      - name: Checkout recovery runtime source guard
+        run: php tests/bh4-checkout-recovery-runtime-source-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
