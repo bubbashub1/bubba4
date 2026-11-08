@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubba Hub 4 — Safe Staging Preview
  * Description: Isolated BH4 activation preview. Does not load BH3 modules, alter tables, or handle bookings.
- * Version: 0.4.1-preview
+ * Version: 0.4.2-preview
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Bubba Hub South West
@@ -76,7 +76,16 @@ function bh4_render_preview_status() {
     }
     echo '</tbody></table>';
     echo '<h2>Existing activity management</h2><p>Continue using the established Bubba Hub Activities screen. BH4 does not create a second activity manager.</p>';
-    echo '<p><a class="button button-primary" href="' . esc_url( admin_url( 'admin.php?page=bh3-activities' ) ) . '">Open existing Activities</a></p>';
+    $activity_tools = array(
+        'Manage existing activities' => 'bh3-activities',
+        'Add activity (staging only)' => 'bh3-add-activity',
+        'Directory readiness' => 'bh3-directory-readiness',
+    );
+    echo '<p>';
+    foreach ( $activity_tools as $label => $slug ) {
+        echo '<a class="button" style="margin-right:8px" href="' . esc_url( admin_url( 'admin.php?page=' . $slug ) ) . '">' . esc_html( $label ) . '</a> ';
+    }
+    echo '</p><p><em>Existing BH3 tools remain responsible for all activity changes. BH4 has not enabled its own editors or migrations.</em></p>';
     echo '<h2>Migration modules</h2>';
     echo '<table class="widefat striped"><thead><tr><th>Module</th><th>BH4 status</th></tr></thead><tbody>';
     foreach ( $modules as $module ) {
