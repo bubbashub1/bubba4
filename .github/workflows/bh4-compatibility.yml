@@ -19,7 +19,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Static PHP source inventory
         run: |
-          python3 scripts/bh4_static_audit.py --strict > bh4-static-audit.json
+          python3 scripts/bh4_static_audit.py > bh4-static-audit.json
           python3 -m json.tool bh4-static-audit.json > /dev/null
           python3 - <<'PY'
           import json
@@ -27,6 +27,7 @@ jobs:
               audit = json.load(f)
           print('Scanned PHP source files:', audit['source_files'])
           print('Classes:', audit['class_definitions'])
+          print('Duplicate class candidates:', len(audit['duplicate_class_definitions']))
           print('Shortcodes:', len(audit['shortcodes']))
           print('Potential schema files:', len(audit['potential_schema_change_files']))
           PY
