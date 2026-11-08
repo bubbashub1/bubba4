@@ -114,6 +114,7 @@ final class BH_Family_DB_Setup_3 {
         echo '</div>';
     }
     public static function create() {
+        if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true ) wp_die( 'BH4 schema changes disabled.', '', array( 'response' => 403 ) );
         if (!self::staging() || !current_user_can('manage_options')) wp_die('Staging administrator required.','',array('response'=>403));
         check_admin_referer('bh3_create_family_tables');
         if (!isset($_POST['confirm']) || $_POST['confirm']!=='1') wp_die('Confirm backup first.','',array('response'=>400));
