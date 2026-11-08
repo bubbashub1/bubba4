@@ -250,6 +250,25 @@ final class BH_Developments_Admin_3 {
         echo '<div class="notice notice-info inline"><p><strong>Our guiding principle:</strong> Does it save time, make family life easier, or help people connect? If it doesn\'t, it probably isn\'t a priority.</p></div>';
         echo '<h2>Bubba Hub 4.0 — Core launch foundation (formerly 3.0)</h2>';
         echo '<p>Complete WordPress migration, legacy feature parity, security and staging testing across Directory, Family Hub, Leader Portal, Bookings and Support. All essential unfinished migration and parity work remains part of the 4.0 launch foundation; the 4.1–4.8 enhancement phases retain their existing saved status IDs.</p>';
+        // Single Stage 1 checklist: existing roadmap/status options remain untouched.
+        // Evidence labels describe code review only, not live deployment or user acceptance.
+        $foundation_tasks = array(
+            array( 'Bubba 4 repository and isolated branch', 'Code prepared', 'stage-1-foundation branch; PR #2' ),
+            array( 'Preserve existing Developments and saved statuses', 'Code verified', 'Existing admin implementation and WordPress options retained' ),
+            array( 'Leader dashboard account-name greeting', 'Automated checks passed', 'PR #2; staging user acceptance outstanding' ),
+            array( 'Consolidate duplicate admin navigation', 'Automated checks passed', 'Workstreams hidden; original screen and route retained' ),
+            array( 'Confirm plugin bootstrap and theme compatibility', 'Needs staging test', 'Check shortcodes, templates, routes and activation conflicts' ),
+            array( 'Verify SQL and existing family, leader and booking data', 'Needs staging test', 'No schema migration or production writes authorised' ),
+            array( 'Staging smoke test and release approval', 'Not started', 'Confirm real user journeys before merging or deploying' ),
+        );
+        echo '<h2>Stage 1 — Foundation &amp; Admin</h2>';
+        echo '<p>Current build checklist for the Bubba 4 migration. Automated checks are not a substitute for staging acceptance. This section is informational; existing editable development statuses are preserved below.</p>';
+        echo '<div style="max-width:1100px;overflow-x:auto"><table class="widefat striped"><thead><tr><th scope="col">Task</th><th scope="col">Evidence status</th><th scope="col">Next check / reference</th></tr></thead><tbody>';
+        foreach ( $foundation_tasks as $task ) {
+            echo '<tr><th scope="row">' . esc_html( $task[0] ) . '</th><td>' . esc_html( $task[1] ) . '</td><td>' . esc_html( $task[2] ) . '</td></tr>';
+        }
+        echo '</tbody></table></div>';
+        echo '<p><a class="button button-secondary" href="' . esc_url( 'https://github.com/bubbashub1/bubba4/pull/2' ) . '" target="_blank" rel="noopener noreferrer">View Stage 1 pull request</a></p>';
         echo '<h3>Family inspiration — captured requirements</h3>';
         echo '<p>These are roadmap requirements, not proof of deployed functionality. Suggestions must use real directory data and deterministic filters without requiring AI or paid services.</p>';
         echo '<ul style="list-style:disc;padding-left:24px"><li><strong>Rainy Day Rescue:</strong> indoor and covered ideas, nearby activities and curated at-home resources.</li><li><strong>What\'s On This Weekend?:</strong> age-, budget- and location-aware weekend sessions.</li><li><strong>Free &amp; Under £5 Finder:</strong> verified affordable activities.</li><li><strong>School Holiday Hub:</strong> date-specific holiday events and clubs.</li><li><strong>Inspire Me / Surprise Me:</strong> rule-based family suggestions.</li><li><strong>Family Trails, Bubba Adventures, Bubba Brief, Family Week, Little Explorers Passport and Memories:</strong> planned family experiences.</li></ul>';
