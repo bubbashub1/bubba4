@@ -77,11 +77,17 @@ final class BH_Leader_Frontend_3 {
             usort( $upcoming, static function ( $a, $b ) { return strcmp( $a['date']->format( 'Ymd' ) . $a['time'], $b['date']->format( 'Ymd' ) . $b['time'] ); } );
             $upcoming = array_slice( $upcoming, 0, 5 );
         }
+        // Personal greeting uses the account holder, not the organisation's name.
+        // Avoid the generic registration placeholder when a real name is available.
+        $leader_user = wp_get_current_user();
+        $leader_first_name = trim( (string) get_user_meta( $leader_user->ID, 'first_name', true ) );
+        $leader_display_name = trim( (string) $leader_user->display_name );
+        $leader_greeting = $leader_first_name ?: ( $leader_display_name && strcasecmp( $leader_display_name, 'New Bubba Hub Leader' ) !== 0 ? $leader_display_name : $leader_user->user_login );
         ob_start();
         ?>
 
         <main class="bh-leader-shell">
-            <header class="bh-leader-head"><h1>Leader Dashboard</h1><p class="bh-leader-muted"><?php echo $admin_preview ? 'Staging organisation preview: ' : 'Welcome, '; ?><?php echo esc_html( $name ); ?>. Manage your Bubba Hub activities.</p></header>
+            <header class="bh-leader-head"><h1>Leader Dashboard</h1><p class="bh-leader-muted"><?php if ( $admin_preview ) : ?>Staging organisation preview: <?php echo esc_html( $name ); ?>.<?php else : ?>Welcome, <?php echo esc_html( $leader_greeting ); ?>.<?php endif; ?> Manage your Bubba Hub activities.</p></header>
             <?php if ( $admin_preview ) : ?>
               <form method="get" class="bh-leader-quick-actions" aria-label="Staging administrator organisation selector">
                 <label for="bh-preview-organisation"><strong>Preview organisation</strong></label>

@@ -1,0 +1,26 @@
+name: Stage 1 collision guard regression
+
+on:
+  pull_request:
+    paths:
+      - 'plugin/bubba-hub-manager/bubba-hub-manager.php'
+      - 'tests/stage1-plugin-collision.php'
+      - '.github/workflows/stage1-collision-guard.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'plugin/bubba-hub-manager/bubba-hub-manager.php'
+      - 'tests/stage1-plugin-collision.php'
+      - '.github/workflows/stage1-collision-guard.yml'
+
+jobs:
+  collision-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax
+        run: |
+          php -l plugin/bubba-hub-manager/bubba-hub-manager.php
+          php -l tests/stage1-plugin-collision.php
+      - name: Verify existing-manager collision is handled safely
+        run: php tests/stage1-plugin-collision.php
