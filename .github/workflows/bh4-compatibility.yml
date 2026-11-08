@@ -84,3 +84,5 @@ jobs:
         run: php tests/bh4-directory-web-filters-test.php
       - name: Isolated BH4 directory timetable preview fixtures
         run: php tests/bh4-directory-timetable-test.php
+      - name: Isolated BH4 directory card details fixtures
+        run: php tests/bh4-directory-card-details-test.php
