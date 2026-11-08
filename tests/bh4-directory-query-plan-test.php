@@ -29,4 +29,11 @@ check_plan( strpos( $injection['where'], 'os.name LIKE %s' ) !== false, 'organis
 $missing_organiser = $tables;
 unset( $missing_organiser['organisers'] );
 check_plan( BH4_Directory_Query_Plan::build( array(), $missing_organiser ) instanceof WP_Error, 'missing organiser table rejected' );
+$near = BH4_Directory_Query_Plan::build( array( 'latitude' => 50.46, 'longitude' => -3.53, 'radius_miles' => 10 ), $tables );
+check_plan( strpos( $near['where'], '3958.7613' ) !== false, 'great-circle distance included' );
+check_plan( strpos( $near['where'], 'vn.latitude BETWEEN %f AND %f' ) !== false, 'latitude bounding box included' );
+check_plan( count( $near['params'] ) === 8 && $near['params'][7] === 10, 'geographic parameters bound in order' );
+check_plan( BH4_Directory_Query_Plan::build( array( 'latitude' => 50.46 ), $tables ) instanceof WP_Error, 'single coordinate rejected' );
+check_plan( BH4_Directory_Query_Plan::build( array( 'latitude' => 91.0, 'longitude' => 0.0 ), $tables ) instanceof WP_Error, 'out of range latitude rejected' );
+check_plan( BH4_Directory_Query_Plan::build( array( 'latitude' => 50.46, 'longitude' => -3.53, 'radius_miles' => 100 ), $tables ) instanceof WP_Error, 'unsupported radius rejected' );
 echo "BH4 directory query plan fixtures complete.\n";
