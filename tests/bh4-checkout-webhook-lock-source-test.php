@@ -18,7 +18,7 @@ foreach ($parts as $name => $bounds) {
 }
 lock_guard(strpos($parts['status'], "'bh3_status_'") !== false, 'status uses shared legacy lock');
 lock_guard(strpos($parts['webhook'], "'bh3_status_'") !== false, 'webhook shares legacy status lock');
-lock_guard(strpos($parts['checkout'], "'bh3_checkout_'") !== false, 'checkout still has distinct lock');
+lock_guard(strpos($parts['checkout'], "'bh3_status_'") !== false, 'checkout shares booking status lock');
 foreach (array('status','checkout','webhook') as $name) {
     lock_guard(strpos($parts[$name], 'SELECT GET_LOCK(%s, 5)') !== false, "$name acquires lock");
     lock_guard(strpos($parts[$name], 'SELECT RELEASE_LOCK(%s)') !== false, "$name releases lock");
