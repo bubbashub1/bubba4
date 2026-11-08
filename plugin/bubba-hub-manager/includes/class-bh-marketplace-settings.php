@@ -814,7 +814,14 @@ final class BH_Marketplace_Settings_3 {
                 require_once __DIR__ . '/class-bh4-checkout-recovery-option-store.php';
                 require_once __DIR__ . '/class-bh4-checkout-recovery-cas-contract.php';
                 require_once __DIR__ . '/class-bh4-checkout-recovery-atomic-writer.php';
-                $bh4_fingerprint = hash( 'sha256', wp_json_encode( $payload ) );
+                $bh4_encoded_payload = wp_json_encode( $payload );
+                // Never record a fingerprint of an empty/failed JSON encoding.
+                // A malformed fingerprint could conceal a changed Stripe request.
+                if ( ! is_string( $bh4_encoded_payload ) || $bh4_encoded_payload === '' ) {
+                    return new WP_Error( 'checkout_payload_invalid',
+                        'Checkout could not be prepared safely. Please contact support.' );
+                }
+                $bh4_fingerprint = hash( 'sha256', $bh4_encoded_payload );
                 $bh4_attempt = BH4_Checkout_Recovery_Record_Contract::create(
                     (int) $booking['id'], $bh4_fingerprint, time()
                 );
