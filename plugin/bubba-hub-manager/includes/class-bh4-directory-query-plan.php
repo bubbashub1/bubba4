@@ -30,7 +30,7 @@ final class BH4_Directory_Query_Plan {
             $conditions[] = '(a.is_free = 1 OR (a.price_from IS NOT NULL AND a.price_from <= %d))';
             $params[] = $f['max_price'];
         }
-        if ( $f['age_months'] > 0 ) {
+        if ( array_key_exists( 'age_months', $filters ) ) {
             $conditions[] = '(a.age_min_months IS NULL OR a.age_min_months <= %d) AND (a.age_max_months IS NULL OR a.age_max_months >= %d)';
             $params[] = $f['age_months'];
             $params[] = $f['age_months'];
@@ -47,9 +47,8 @@ final class BH4_Directory_Query_Plan {
             $conditions[] = 'EXISTS (SELECT 1 FROM `' . $tables['activity_venues'] . '` av INNER JOIN `' . $tables['venues'] . '` v ON v.id=av.venue_id WHERE av.activity_id=a.id AND v.' . $key . ' ' . $operator . ' %s)';
             $params[] = $operator === 'LIKE' ? ( $key === 'postcode' ? self::escape_like( $f[ $key ] ) . '%' : '%' . self::escape_like( $f[ $key ] ) . '%' ) : $f[ $key ];
         }
-        $order = $f['sort'] === 'newest' ? 'a.id DESC' : ( $f['sort'] === 'town' ? 'a.title ASC' : 'a.title ASC' );
-        // Town ordering requires a venue join; intentionally use stable title order
-        // until the full directory query is reconciled.
+        $town_sort = '(SELECT v_sort.town FROM `' . $tables['activity_venues'] . '` av_sort INNER JOIN `' . $tables['venues'] . '` v_sort ON v_sort.id=av_sort.venue_id WHERE av_sort.activity_id=a.id ORDER BY v_sort.name LIMIT 1)';
+        $order = $f['sort'] === 'newest' ? 'a.id DESC' : ( $f['sort'] === 'town' ? $town_sort . ' ASC, a.title ASC, a.id ASC' : 'a.title ASC, a.id ASC' );
         return array(
             'where' => implode( ' AND ', $conditions ),
             'params' => $params,
@@ -58,7 +57,7 @@ final class BH4_Directory_Query_Plan {
             'offset' => ( $f['page'] - 1 ) * $f['per_page'],
             'execution_allowed' => false,
             'source' => 'read_only_query_plan',
-            'limitations' => array( 'age_months_zero_requires_explicit_presence', 'town_sort_not_yet_equivalent', 'geo_and_organiser_keyword_not_yet_supported' ),
+            'limitations' => array( 'geo_and_organiser_keyword_not_yet_supported' ),
         );
     }
     private static function escape_like( $value ) {
