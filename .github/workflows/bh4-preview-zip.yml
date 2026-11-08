@@ -2,7 +2,7 @@ name: BH4 safe preview install ZIP
 on:
   push:
     paths:
-      - 'bubbawp.php'
+      - 'bubba4/bubba4.php'
       - '.github/workflows/bh4-preview-zip.yml'
   workflow_dispatch:
 permissions:
@@ -14,8 +14,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Verify isolated preview entry
         run: |
-          php -l bubbawp.php
-          ! grep -Eq 'require(_once)?[[:space:]]+.*bubba-hub-manager' bubbawp.php
+          php -l bubba4/bubba4.php
+          ! grep -Eq 'require(_once)?[[:space:]]+.*bubba-hub-manager' bubba4/bubba4.php
           grep -Fq 'Plugin Name: Bubba Hub 4' bubbawp.php
       - name: Build separate plugin ZIP (no legacy BH3 files)
         run: |
