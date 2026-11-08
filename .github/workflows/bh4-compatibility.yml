@@ -155,6 +155,8 @@ jobs:
         run: php tests/bh4-stripe-reconciliation-triage-test.php
       - name: Checkout recovery admin security hardening
         run: php tests/bh4-checkout-recovery-admin-hardening-test.php
+      - name: Stripe recovery lookup eligibility
+        run: php tests/bh4-stripe-lookup-eligibility-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
