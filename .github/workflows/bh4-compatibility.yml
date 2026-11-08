@@ -52,3 +52,5 @@ jobs:
           find plugin tests -type f -name '*.php' -print0 | xargs -0 -r -n1 php -l
       - name: Isolated BH4 session mapping fixtures
         run: php tests/bh4-session-mapping-test.php
+      - name: Isolated BH4 recurring session fixtures
+        run: php tests/bh4-recurrence-fixtures-test.php
