@@ -4,7 +4,7 @@ defined( 'ABSPATH' ) || exit;
 final class BH4_Directory_Filter_Contract {
     public static function normalize( $input ) {
         if ( ! is_array( $input ) ) { return new WP_Error( 'bh4_invalid_filters', 'Filters must be an array.' ); }
-        $allowed = array( 'search', 'category', 'town', 'region', 'postcode', 'age_months', 'day', 'term_time', 'free_only', 'max_price', 'sort', 'page', 'per_page' );
+        $allowed = array( 'search', 'category', 'town', 'region', 'postcode', 'age_months', 'day', 'term_time', 'free_only', 'max_price', 'sort', 'page', 'per_page', 'latitude', 'longitude', 'radius_miles' );
         foreach ( $input as $key => $unused ) {
             if ( ! in_array( $key, $allowed, true ) ) { return new WP_Error( 'bh4_unknown_filter', 'Unknown filter.' ); }
         }
@@ -30,6 +30,20 @@ final class BH4_Directory_Filter_Contract {
         $sort = $input['sort'] ?? 'title';
         if ( ! in_array( $sort, array( 'title', 'town', 'newest' ), true ) ) { return new WP_Error( 'bh4_invalid_filter', 'Invalid sort.' ); }
         $result['sort'] = $sort;
+        $has_lat = array_key_exists( 'latitude', $input );
+        $has_lng = array_key_exists( 'longitude', $input );
+        if ( $has_lat !== $has_lng ) { return new WP_Error( 'bh4_invalid_geo', 'Both coordinates required.' ); }
+        if ( $has_lat ) {
+            foreach ( array( 'latitude' => 90, 'longitude' => 180 ) as $key => $bound ) {
+                $value = $input[ $key ];
+                if ( ! is_int( $value ) && ! is_float( $value ) ) { return new WP_Error( 'bh4_invalid_geo', 'Numeric coordinates required.' ); }
+                if ( ! is_finite( (float) $value ) || abs( $value ) > $bound ) { return new WP_Error( 'bh4_invalid_geo', 'Coordinates out of range.' ); }
+                $result[ $key ] = (float) $value;
+            }
+        }
+        $radius = $input['radius_miles'] ?? 10;
+        if ( ! is_int( $radius ) || ! in_array( $radius, array( 5, 10, 20, 50 ), true ) ) { return new WP_Error( 'bh4_invalid_geo', 'Invalid radius.' ); }
+        $result['radius_miles'] = $radius;
         return $result;
     }
 }
