@@ -71,6 +71,8 @@ jobs:
         run: php tests/bh4-checkout-ownership-test.php
       - name: Source-only checkout hook and webhook guardrails
         run: php tests/bh4-checkout-hook-contract-test.php
+      - name: Isolated Stripe webhook retry decisions
+        run: php tests/bh4-stripe-webhook-retry-contract-test.php
       - name: Isolated BH4 booking reference fixtures
         run: php tests/bh4-booking-reference-test.php
       - name: Isolated BH4 activity API contract fixtures
