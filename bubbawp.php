@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubba Hub 4 — Safe Staging Preview
  * Description: Isolated BH4 activation preview. Does not load BH3 modules, alter tables, or handle bookings.
- * Version: 0.1.0-preview
+ * Version: 0.2.0-preview
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Bubba Hub South West
@@ -23,3 +23,61 @@ add_action( 'admin_notices', static function () {
         esc_html( 'Bubba Hub 4 safe preview is active. BH3 remains in control; BH4 directory, bookings, family and leader modules are not enabled.' ) .
         '</p></div>';
 } );
+
+/**
+ * Read-only migration dashboard. Does not include or register BH3 modules.
+ * All features remain disabled until isolated staging acceptance tests pass.
+ */
+add_action( 'admin_menu', static function () {
+    add_menu_page(
+        'Bubba Hub 4', 'Bubba Hub 4', 'manage_options', 'bubba4-status',
+        'bh4_render_preview_status', 'dashicons-admin-tools', 58
+    );
+} );
+
+function bh4_render_preview_status() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( esc_html__( 'Not authorised.', 'bubba4' ) );
+    }
+    $plugins = (array) get_option( 'active_plugins', array() );
+    $active  = static function ( $slug ) use ( $plugins ) {
+        foreach ( $plugins as $plugin ) {
+            if ( 0 === strpos( $plugin, $slug . '/' ) ) {
+                return true;
+            }
+        }
+        return false;
+    };
+    $dependencies = array(
+        'Bubba Hub Manager 3.0' => $active( 'bubbawp' ) || class_exists( 'BH_Manager_3', false ),
+        'Events Manager'        => $active( 'events-manager' ),
+        'Ninja Forms'           => $active( 'ninja-forms' ),
+        'Simple Membership'     => $active( 'simple-membership' ),
+        'FluentAuth'            => $active( 'fluent-auth' ),
+        'FluentSMTP'            => $active( 'fluent-smtp' ),
+    );
+    $modules = array(
+        'Directory and activity pages',
+        'Family Hub',
+        'Leader portal',
+        'Booking checkout and Stripe',
+        'Events and ticketing',
+        'Support and guidance',
+        'Membership integration',
+    );
+    echo '<div class="wrap"><h1>Bubba Hub 4 — Migration Dashboard</h1>';
+    echo '<p><strong>Safe preview 0.2.0.</strong> Bubba Hub 3.0 remains in control. This page does not change settings, database records, payments, or bookings.</p>';
+    echo '<h2>Installed integration checks</h2>';
+    echo '<p>These checks only detect active plugin slugs or the BH3 class. They do not prove integrations are configured or functional.</p>';
+    echo '<table class="widefat striped"><thead><tr><th>Integration</th><th>Detected</th></tr></thead><tbody>';
+    foreach ( $dependencies as $name => $detected ) {
+        echo '<tr><td>' . esc_html( $name ) . '</td><td>' . esc_html( $detected ? 'Detected' : 'Not detected / check manually' ) . '</td></tr>';
+    }
+    echo '</tbody></table>';
+    echo '<h2>Migration modules</h2>';
+    echo '<table class="widefat striped"><thead><tr><th>Module</th><th>BH4 status</th></tr></thead><tbody>';
+    foreach ( $modules as $module ) {
+        echo '<tr><td>' . esc_html( $module ) . '</td><td>Disabled — requires isolated staging acceptance test</td></tr>';
+    }
+    echo '</tbody></table><p><strong>Next:</strong> verify the plugin entry point and test each module separately before enabling anything.</p></div>';
+}
