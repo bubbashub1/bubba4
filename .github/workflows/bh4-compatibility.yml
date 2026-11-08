@@ -147,6 +147,8 @@ jobs:
         run: php tests/bh4-stripe-readonly-verification-gate-test.php
       - name: Stripe read-only lookup response fixtures
         run: php tests/bh4-stripe-readonly-lookup-contract-test.php
+      - name: Stripe read-only test-mode GET adapter fixtures
+        run: php tests/bh4-stripe-readonly-lookup-adapter-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
