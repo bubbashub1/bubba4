@@ -23,3 +23,36 @@ add_action( 'admin_notices', static function () {
         esc_html( 'Bubba Hub 4 safe preview is active. BH3 remains in control; BH4 directory, bookings, family and leader modules are not enabled.' ) .
         '</p></div>';
 } );
+
+/**
+ * Read-only migration dashboard. Does not include or register BH3 modules.
+ * All features remain disabled until isolated staging acceptance tests pass.
+ */
+add_action( 'admin_menu', static function () {
+    add_menu_page(
+        'Bubba Hub 4', 'Bubba Hub 4', 'manage_options', 'bubba4-status',
+        'bh4_render_preview_status', 'dashicons-admin-tools', 58
+    );
+} );
+
+function bh4_render_preview_status() {
+    if ( ! current_user_can( 'manage_options' ) ) {
+        wp_die( 'Not authorised.' );
+    }
+    $modules = array(
+        'Directory and activity pages',
+        'Family Hub',
+        'Leader portal',
+        'Booking checkout and Stripe',
+        'Events and ticketing',
+        'Support and guidance',
+        'Membership integration',
+    );
+    echo '<div class="wrap"><h1>Bubba Hub 4 — Migration Status</h1>';
+    echo '<p>This is an isolated staging preview. No BH4 modules are enabled; existing BH3 remains responsible for site features.</p>';
+    echo '<table class="widefat striped"><thead><tr><th>Module</th><th>BH4 status</th></tr></thead><tbody>';
+    foreach ( $modules as $module ) {
+        echo '<tr><td>' . esc_html( $module ) . '</td><td>Not enabled — awaiting compatibility testing</td></tr>';
+    }
+    echo '</tbody></table><p>No settings or database records can be changed from this screen.</p></div>';
+}
