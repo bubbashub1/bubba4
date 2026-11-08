@@ -117,6 +117,8 @@ jobs:
         run: php tests/bh4-booking-job-safety-contract-test.php
       - name: Expiry and payment concurrency gate fixtures
         run: php tests/bh4-expiry-concurrency-gate-test.php
+      - name: Stripe timeout and duplicate checkout recovery fixtures
+        run: php tests/bh4-checkout-timeout-recovery-gate-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
