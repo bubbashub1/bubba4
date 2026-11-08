@@ -1,0 +1,88 @@
+<?php
+/** Shared staging-only leader portal navigation shell. No data writes. */
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+final class BH_Leader_Layout_3 {
+    public static function register() {
+        add_filter( 'do_shortcode_tag', array( __CLASS__, 'wrap' ), 20, 4 );
+    }
+    public static function wrap( $output, $tag, $attr, $m ) {
+        $pages = array(
+            'bh_leader_dashboard' => 'Dashboard',
+            'bh_leader_edit_activity' => 'Edit activity',
+            'bh_leader_venues' => 'Venues',
+            'bh_leader_timetable' => 'Timetable',
+            'bh_leader_business' => 'My Business',
+            'bh_leader_bookings' => 'Bookings',
+            'bh_leader_booking_dashboard' => 'Bookings',
+            'bh_leader_support' => 'Help',
+            'bh_leader_statistics' => 'Statistics',
+            'bh_leader_account' => 'Account',
+            'bh_leader_payout_settings' => 'Payments',
+        );
+        if ( ! isset( $pages[ $tag ] ) ||
+            strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) !== 'staging.bubbahub.co.uk' ||
+            ! is_user_logged_in() || ! current_user_can( 'read' ) ||
+            ( strpos( (string) $output, '<section' ) === false && 'bh_leader_payout_settings' !== $tag ) ) { return $output; }
+        $id = absint( $_GET['activity_id'] ?? 0 );
+        $activity_args = $id ? array( 'activity_id' => $id ) : array();
+        $links = array(
+            array( 'Dashboard', home_url( '/leader/' ), 'Dashboard' ),
+            array( 'Activities', home_url( '/leader/' ) . '#my-activities', 'Activities' ),
+
+            array( 'My Business', home_url( '/leader/business/' ), 'My Business' ),
+            array( 'Bookings', home_url( '/leader/bookings/' ), 'Bookings' ),
+            array( 'Statistics', home_url( '/leader/statistics/' ), 'Statistics' ),
+            array( 'Payments & Payouts', home_url( '/leader/payment/' ), 'Payments' ),
+            array( 'Help & Support', home_url( '/leader/support/' ), 'Help' ),
+            array( 'Account Settings', home_url( '/leader/account/' ), 'Account' ),
+        );
+        // Activity-specific screens need an activity selection; avoid links to empty editors.
+        if ( $id ) {
+            array_splice( $links, 2, 0, array(
+                array( 'Edit activity', add_query_arg( $activity_args, home_url( '/leader/edit-activity/' ) ), 'Edit activity' ),
+                array( 'Venues', add_query_arg( $activity_args, home_url( '/leader/venues/' ) ), 'Venues' ),
+                array( 'Timetable', add_query_arg( $activity_args, home_url( '/leader/timetable/' ) ), 'Timetable' ),
+            ) );
+        }
+        $activity_title = '';
+        if ( $id && in_array( $tag, array( 'bh_leader_edit_activity', 'bh_leader_venues', 'bh_leader_timetable' ), true ) ) {
+            $organiser_id = absint( get_user_meta( get_current_user_id(), 'bh3_organiser_id', true ) );
+            if ( $organiser_id ) {
+                global $wpdb;
+                $activities_table = $wpdb->prefix . 'activities';
+                $activity_title = (string) $wpdb->get_var( $wpdb->prepare(
+                    "SELECT title FROM `{$activities_table}` WHERE id=%d AND organiser_id=%d AND status='draft' LIMIT 1",
+                    $id, $organiser_id
+                ) );
+            }
+        }
+        ob_start(); ?>
+        <div class="bh-leader-unified">
+          <div class="bh-unified-layout">
+            <nav class="bh-unified-nav" aria-label="Leader portal navigation"><strong>Leader Hub</strong>
+              <?php foreach ( $links as $link ) : ?>
+                <a href="<?php echo esc_url( $link[1] ); ?>" <?php if ( $pages[ $tag ] === $link[2]  ) : ?>aria-current="page"<?php endif; ?>><?php echo esc_html( $link[0] ); ?></a>
+              <?php endforeach; ?>
+            </nav>
+            <main class="bh-unified-content">
+              <?php if ( $activity_title ) : ?>
+                <nav class="bh-activity-workflow" aria-label="Selected activity workflow">
+                  <div class="bh-activity-workflow__heading"><span>Editing activity</span><strong><?php echo esc_html( $activity_title ); ?></strong></div>
+                  <div class="bh-activity-workflow__steps">
+                    <?php foreach ( array(
+                        array( '1. Details', 'bh_leader_edit_activity', '/leader/edit-activity/' ),
+                        array( '2. Venues', 'bh_leader_venues', '/leader/venues/' ),
+                        array( '3. Timetable', 'bh_leader_timetable', '/leader/timetable/' ),
+                    ) as $step ) : ?>
+                      <a href="<?php echo esc_url( add_query_arg( 'activity_id', $id, home_url( $step[2] ) ) ); ?>" <?php if ( $tag === $step[1] ) : ?>aria-current="step"<?php endif; ?>><?php echo esc_html( $step[0] ); ?></a>
+                    <?php endforeach; ?>
+                  </div>
+                </nav>
+              <?php endif; ?>
+              <?php echo $output; // Shortcode HTML generated by trusted portal renderers. ?>
+            </main>
+          </div>
+        </div>
+        <?php return ob_get_clean();
+    }
+}
