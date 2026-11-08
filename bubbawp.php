@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubba Hub 4 — Safe Staging Preview
  * Description: Isolated BH4 activation preview. Does not load BH3 modules, alter tables, or handle bookings.
- * Version: 0.4.0-preview
+ * Version: 0.4.1-preview
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Bubba Hub South West
@@ -67,7 +67,7 @@ function bh4_render_preview_status() {
         'Membership integration',
     );
     echo '<div class="wrap"><h1>Bubba Hub 4 — Migration Dashboard</h1>';
-    echo '<p><strong>Safe preview 0.3.0.</strong> Bubba Hub 3.0 remains in control. This page does not change settings, database records, payments, or bookings.</p>';
+    echo '<p><strong>Safe preview 0.4.1.</strong> Bubba Hub 3.0 remains in control. This page does not change settings, database records, payments, or bookings.</p>';
     echo '<h2>Installed integration checks</h2>';
     echo '<p>These checks only detect active plugin slugs or the BH3 class. They do not prove integrations are configured or functional.</p>';
     echo '<table class="widefat striped"><thead><tr><th>Integration</th><th>Detected</th></tr></thead><tbody>';
@@ -75,6 +75,8 @@ function bh4_render_preview_status() {
         echo '<tr><td>' . esc_html( $name ) . '</td><td>' . esc_html( $detected ? 'Detected' : 'Not detected / check manually' ) . '</td></tr>';
     }
     echo '</tbody></table>';
+    echo '<h2>Existing activity management</h2><p>Continue using the established Bubba Hub Activities screen. BH4 does not create a second activity manager.</p>';
+    echo '<p><a class="button button-primary" href="' . esc_url( admin_url( 'admin.php?page=bh3-activities' ) ) . '">Open existing Activities</a></p>';
     echo '<h2>Migration modules</h2>';
     echo '<table class="widefat striped"><thead><tr><th>Module</th><th>BH4 status</th></tr></thead><tbody>';
     foreach ( $modules as $module ) {
@@ -87,9 +89,8 @@ function bh4_render_preview_status() {
  * Administrator-only read-only activity inventory. Never changes records.
  * Check both legacy and WordPress-prefixed table names, without guessing columns.
  */
-add_action( 'admin_menu', static function () {
-    add_submenu_page( 'bubba4-status', 'Activity Inventory', 'Activity Inventory', 'manage_options', 'bubba4-activities', 'bh4_render_activity_inventory' );
-} );
+// The experimental inventory is deliberately not registered as an admin menu.
+// BH3 Activities remains the single management interface during migration.
 
 function bh4_render_activity_inventory() {
     if ( ! current_user_can( 'manage_options' ) ) {
