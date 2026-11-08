@@ -19,7 +19,7 @@ final class BH4_Checkout_Recovery_Admin_Review {
   $nonce=isset($_GET['_wpnonce'])&&is_string($_GET['_wpnonce'])?
    sanitize_text_field(wp_unslash($_GET['_wpnonce'])):'';
   $auth=BH4_Reconciliation_Access_Contract::authorize(
-   true,true,is_admin(),$_SERVER['REQUEST_METHOD']??'',wp_verify_nonce($nonce,'bh4_recovery_review')===1
+   true,true,is_admin(),$_SERVER['REQUEST_METHOD']??'',wp_verify_nonce($nonce,'bh4_recovery_review')!==false
   );
   if(empty($auth['allowed'])) {
    echo '<div class="wrap"><h1>Checkout Recovery Review</h1><p>Read-only review requires a valid link.</p></div>';
@@ -32,12 +32,16 @@ final class BH4_Checkout_Recovery_Admin_Review {
    "SELECT option_name,option_value FROM `{$wpdb->options}` WHERE option_name LIKE %s ORDER BY option_id DESC LIMIT 50",
    $pattern
   ),ARRAY_A);
-  echo '<div class="wrap"><h1>Checkout Recovery Review</h1><p>Read-only. Do not retry or refund from this page.</p>';
+  echo '<div class="wrap"><h1>Checkout Recovery Review</h1><p>Read-only recovery records only. Stripe payment status has not been independently verified here. Do not retry, confirm, or refund from this page.</p>';
   echo '<table class="widefat striped"><thead><tr><th>Booking ID</th><th>Priority</th><th>Investigation guidance</th><th>Recovery state</th><th>Created (UTC)</th><th>Session recorded</th></tr></thead><tbody>';
   foreach((array)$values as $row) {
    $id=(string)($row['option_name']??'');
    if(!preg_match('/^bh4_checkout_recovery_([1-9][0-9]*)$/D',$id,$match)) {continue;}
-   $record=maybe_unserialize($row['option_value']??'');
+   // WordPress option records are serialized arrays; prohibit object
+   // instantiation when reviewing potentially malformed option values.
+   $raw=$row['option_value']??'';
+   if(!is_string($raw)||strlen($raw)>8192||!preg_match('/^a:[0-9]+:\\{/D',$raw)) {continue;}
+   $record=@unserialize($raw,array('allowed_classes'=>false));
    if(!is_array($record)||(int)($record['booking_id']??0)!==(int)$match[1]) {continue;}
    $state=$record['state']??'unknown';
    if(!in_array($state,array('creating','needs_reconciliation','manual_review','saved'),true)) {$state='unknown';}
