@@ -22,7 +22,7 @@ final class BH_Family_Native_Profiles_3 {
         return self::dashboard();
     }
     public static function maybe_add_gender_column() {
-        if (!current_user_can('manage_options') || strtolower((string)wp_parse_url(home_url(),PHP_URL_HOST))!=='staging.bubbahub.co.uk') return;
+        if (!defined('BH4_ALLOW_STAGING_SCHEMA_CHANGES') || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true || !current_user_can('manage_options') || strtolower((string)wp_parse_url(home_url(),PHP_URL_HOST))!=='staging.bubbahub.co.uk') return;
         global $wpdb; $table=$wpdb->prefix.'bh_family_profiles';
         if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s',$wpdb->esc_like($table)))!==$table) return;
         $columns=$wpdb->get_col("SHOW COLUMNS FROM `{$table}`",0);
