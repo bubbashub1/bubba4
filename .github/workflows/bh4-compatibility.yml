@@ -1,0 +1,46 @@
+name: BH4 read-only compatibility checks
+
+on:
+  pull_request:
+    paths:
+      - 'plugin/**'
+      - 'bubbawp.php'
+      - 'scripts/bh4_static_audit.py'
+      - '.github/workflows/bh4-compatibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static PHP source inventory
+        run: |
+          python3 scripts/bh4_static_audit.py --strict > bh4-static-audit.json
+          python3 -m json.tool bh4-static-audit.json > /dev/null
+          python3 - <<'PY'
+          import json
+          with open('bh4-static-audit.json', encoding='utf-8') as f:
+              audit = json.load(f)
+          print('Scanned PHP source files:', audit['source_files'])
+          print('Classes:', audit['class_definitions'])
+          print('Shortcodes:', len(audit['shortcodes']))
+          print('Potential schema files:', len(audit['potential_schema_change_files']))
+          PY
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bh4-static-audit
+          path: bh4-static-audit.json
+          retention-days: 7
+  php-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax checks
+        run: |
+          php -l bubbawp.php
+          find plugin -type f -name '*.php' -print0 | xargs -0 -r -n1 php -l
