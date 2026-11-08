@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Bubba Hub 4 — Safe Staging Preview
  * Description: Isolated BH4 activation preview. Does not load BH3 modules, alter tables, or handle bookings.
- * Version: 0.3.0-preview
+ * Version: 0.4.0-preview
  * Requires at least: 6.4
  * Requires PHP: 8.0
  * Author: Bubba Hub South West
@@ -96,50 +96,85 @@ function bh4_render_activity_inventory() {
         wp_die( esc_html__( 'Not authorised.', 'bubba4' ) );
     }
     global $wpdb;
+    $search = isset( $_GET['bh4_search'] ) && is_string( $_GET['bh4_search'] ) ? sanitize_text_field( wp_unslash( $_GET['bh4_search'] ) ) : '';
+    $status = isset( $_GET['bh4_status'] ) && is_string( $_GET['bh4_status'] ) ? sanitize_key( wp_unslash( $_GET['bh4_status'] ) ) : '';
+    $page = isset( $_GET['bh4_page'] ) ? max( 1, min( 10000, absint( $_GET['bh4_page'] ) ) ) : 1;
+    $per_page = 20;
     $candidates = array_unique( array( $wpdb->prefix . 'activities', 'bh_activities' ) );
-    $found = array();
+    echo '<div class="wrap"><h1>Bubba Hub 4 — Activity Inventory</h1>';
+    echo '<p>Read-only access to existing activity tables. No records are imported, edited, published, or migrated.</p>';
+    echo '<form method="get"><input type="hidden" name="page" value="bubba4-activities" />';
+    echo '<label for="bh4-search">Search title or slug: </label> <input id="bh4-search" type="search" name="bh4_search" value="' . esc_attr( $search ) . '" /> ';
+    echo '<label for="bh4-status">Status: </label> <select id="bh4-status" name="bh4_status">';
+    foreach ( array( '' => 'All statuses', 'published' => 'Published', 'draft' => 'Draft', 'pending' => 'Pending', 'private' => 'Private' ) as $value => $label ) {
+        echo '<option value="' . esc_attr( $value ) . '"' . selected( $status, $value, false ) . '>' . esc_html( $label ) . '</option>';
+    }
+    echo '</select> <button class="button button-primary" type="submit">Filter</button></form>';
+    $found = false;
     foreach ( $candidates as $candidate ) {
         $table = $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $wpdb->esc_like( $candidate ) ) );
-        if ( $table === $candidate ) {
-            $found[] = $candidate;
+        if ( $table !== $candidate ) {
+            continue;
         }
-    }
-    echo '<div class="wrap"><h1>Bubba Hub 4 — Activity Inventory</h1>';
-    echo '<p>Read-only inspection of existing activity tables. No records are imported, edited, published, or migrated.</p>';
-    if ( ! $found ) {
-        echo '<div class="notice notice-warning"><p>No supported activity table was detected. Check the current staging database schema before proceeding.</p></div></div>';
-        return;
-    }
-    foreach ( $found as $table ) {
+        $found = true;
         $quoted = '`' . str_replace( '`', '``', $table ) . '`';
         $columns = $wpdb->get_col( 'SHOW COLUMNS FROM ' . $quoted, 0 );
-        if ( ! is_array( $columns ) ) {
-            echo '<p>Unable to inspect ' . esc_html( $table ) . '.</p>';
+        if ( ! is_array( $columns ) || ! in_array( 'id', $columns, true ) || ! in_array( 'title', $columns, true ) ) {
+            echo '<p>' . esc_html( $table ) . ': required columns missing or unreadable.</p>';
             continue;
         }
-        $has_id = in_array( 'id', $columns, true );
-        $has_title = in_array( 'title', $columns, true );
         $has_slug = in_array( 'slug', $columns, true );
         $has_status = in_array( 'status', $columns, true );
+        $where = array();
+        $params = array();
+        if ( $search !== '' ) {
+            $like = '%' . $wpdb->esc_like( $search ) . '%';
+            $where[] = $has_slug ? '(title LIKE %s OR slug LIKE %s)' : 'title LIKE %s';
+            $params[] = $like;
+            if ( $has_slug ) {
+                $params[] = $like;
+            }
+        }
+        if ( $status !== '' && $has_status ) {
+            $where[] = 'status = %s';
+            $params[] = $status;
+        }
+        $clause = $where ? ' WHERE ' . implode( ' AND ', $where ) : '';
+        $count_sql = 'SELECT COUNT(*) FROM ' . $quoted . $clause;
+        $count = $wpdb->get_var( $params ? $wpdb->prepare( $count_sql, $params ) : $count_sql );
         echo '<h2>' . esc_html( $table ) . '</h2>';
-        echo '<p>Available listing fields: ' . esc_html( implode( ', ', array_intersect( array( 'id', 'title', 'slug', 'status' ), $columns ) ) ) . '</p>';
-        if ( ! $has_id || ! $has_title ) {
-            echo '<p>Required columns are missing. Listing is disabled for this table.</p>';
+        if ( ! is_numeric( $count ) ) {
+            echo '<p>Unable to count matching activities.</p>';
             continue;
         }
-        $count = $wpdb->get_var( 'SELECT COUNT(*) FROM ' . $quoted );
-        echo '<p>Records: <strong>' . esc_html( is_numeric( $count ) ? number_format_i18n( (int) $count ) : 'Unavailable' ) . '</strong></p>';
+        echo '<p>Matching records: <strong>' . esc_html( number_format_i18n( (int) $count ) ) . '</strong></p>';
         $fields = 'id, title' . ( $has_slug ? ', slug' : '' ) . ( $has_status ? ', status' : '' );
-        $rows = $wpdb->get_results( 'SELECT ' . $fields . ' FROM ' . $quoted . ' ORDER BY id DESC LIMIT 20', ARRAY_A );
+        $sql = 'SELECT ' . $fields . ' FROM ' . $quoted . $clause . ' ORDER BY id DESC LIMIT %d OFFSET %d';
+        $query_params = array_merge( $params, array( $per_page, ( $page - 1 ) * $per_page ) );
+        $rows = $wpdb->get_results( $wpdb->prepare( $sql, $query_params ), ARRAY_A );
         if ( ! is_array( $rows ) ) {
-            echo '<p>Unable to read records.</p>';
+            echo '<p>Unable to read matching activities.</p>';
             continue;
         }
         echo '<table class="widefat striped"><thead><tr><th>ID</th><th>Activity</th><th>Slug</th><th>Status</th></tr></thead><tbody>';
         foreach ( $rows as $row ) {
             echo '<tr><td>' . esc_html( (string) $row['id'] ) . '</td><td>' . esc_html( (string) $row['title'] ) . '</td><td>' . esc_html( (string) ( $row['slug'] ?? '—' ) ) . '</td><td>' . esc_html( (string) ( $row['status'] ?? '—' ) ) . '</td></tr>';
         }
-        echo '</tbody></table><p>Showing at most 20 most recent IDs; no private or booking fields are queried.</p>';
+        echo '</tbody></table>';
+        $pages = (int) ceil( (int) $count / $per_page );
+        if ( $pages > 1 ) {
+            echo '<p>Page ' . esc_html( (string) $page ) . ' of ' . esc_html( (string) $pages ) . ' ';
+            foreach ( array( 'Previous' => $page - 1, 'Next' => $page + 1 ) as $label => $target ) {
+                if ( $target >= 1 && $target <= $pages ) {
+                    $url = add_query_arg( array( 'page' => 'bubba4-activities', 'bh4_page' => $target, 'bh4_search' => $search, 'bh4_status' => $status ), admin_url( 'admin.php' ) );
+                    echo ' <a class="button" href="' . esc_url( $url ) . '">' . esc_html( $label ) . '</a> ';
+                }
+            }
+            echo '</p>';
+        }
+    }
+    if ( ! $found ) {
+        echo '<div class="notice notice-warning"><p>No supported activity table detected.</p></div>';
     }
     echo '</div>';
 }
