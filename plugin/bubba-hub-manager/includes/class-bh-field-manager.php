@@ -38,6 +38,7 @@ final class BH_Field_Manager_3 {
         add_submenu_page( 'bubba-hub-3-status', 'Field Manager', 'Field Manager', 'manage_options', 'bh3-field-manager', array( __CLASS__, 'render' ) );
     }
     public static function install() {
+        if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true ) wp_die( 'BH4 schema changes disabled.', '', array( 'response' => 403 ) );
         self::guard( 'bh3_field_install' );
         if ( sanitize_text_field( wp_unslash( $_POST['confirm'] ?? '' ) ) !== 'INSTALL' ) { wp_die( 'Type INSTALL to confirm.', '', array( 'response' => 400 ) ); }
         global $wpdb;

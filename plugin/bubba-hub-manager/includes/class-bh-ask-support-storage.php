@@ -116,6 +116,7 @@ final class BH_Ask_Support_Storage_3 {
     }
 
     public static function install(): void {
+        if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true ) wp_die( 'BH4 schema changes disabled.', '', ['response' => 403] );
         if (!current_user_can('manage_options') || strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST)) !== 'staging.bubbahub.co.uk') {
             wp_die('Not authorised.', '', ['response' => 403]);
         }

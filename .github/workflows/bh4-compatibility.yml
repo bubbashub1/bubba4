@@ -1,0 +1,199 @@
+name: BH4 read-only compatibility checks
+
+on:
+  pull_request:
+    paths:
+      - 'plugin/**'
+      - 'bubbawp.php'
+      - 'scripts/bh4_static_audit.py'
+      - 'scripts/bh4_hook_inventory.py'
+      - 'tests/**'
+      - '.github/workflows/bh4-compatibility.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  source-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static PHP source inventory
+        run: |
+          python3 scripts/bh4_static_audit.py > bh4-static-audit.json
+          python3 -m json.tool bh4-static-audit.json > /dev/null
+          python3 - <<'PY'
+          import json
+          with open('bh4-static-audit.json', encoding='utf-8') as f:
+              audit = json.load(f)
+          print('Scanned PHP source files:', audit['source_files'])
+          print('Classes:', audit['class_definitions'])
+          print('Duplicate class candidates:', len(audit['duplicate_class_definitions']))
+          print('Shortcodes:', len(audit['shortcodes']))
+          print('Potential schema files:', len(audit['potential_schema_change_files']))
+          for name, paths in sorted(audit['duplicate_class_definitions'].items()):
+              print('DUPLICATE_CLASS', name, '::', ', '.join(paths))
+          for path in audit['potential_schema_change_files']:
+              print('SCHEMA_REVIEW', path)
+          PY
+      - name: Source-only hooks and scheduled jobs inventory
+        run: |
+          python3 scripts/bh4_hook_inventory.py > bh4-hook-inventory.json
+          python3 -m json.tool bh4-hook-inventory.json > /dev/null
+          python3 - <<'PY'
+          import json
+          data = json.load(open('bh4-hook-inventory.json', encoding='utf-8'))
+          for category, matches in sorted(data['categories'].items()):
+              print(category, len(matches))
+          PY
+      - name: Upload audit artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bh4-static-audit
+          path: |
+            bh4-static-audit.json
+            bh4-hook-inventory.json
+          retention-days: 7
+  php-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax checks
+        run: |
+          php -l bubbawp.php
+          find plugin tests -type f -name '*.php' -print0 | xargs -0 -r -n1 php -l
+      - name: Isolated BH4 session mapping fixtures
+        run: php tests/bh4-session-mapping-test.php
+      - name: Isolated BH4 recurring session fixtures
+        run: php tests/bh4-recurrence-fixtures-test.php
+      - name: Isolated BH4 checkout ownership fixtures
+        run: php tests/bh4-checkout-ownership-test.php
+      - name: Source-only checkout hook and webhook guardrails
+        run: php tests/bh4-checkout-hook-contract-test.php
+      - name: Isolated Stripe webhook retry decisions
+        run: php tests/bh4-stripe-webhook-retry-contract-test.php
+      - name: Static Stripe reconciliation ordering guard
+        run: php tests/bh4-stripe-webhook-reconciliation-source-test.php
+      - name: Configured checkout form compatibility guard
+        run: php tests/bh4-form-7-8-compatibility-test.php
+      - name: Isolated multi-attendee and capacity fixtures
+        run: php tests/bh4-multi-attendee-selection-test.php
+      - name: Combined booking fee and hold expiry source guard
+        run: php tests/bh4-fee-and-expiry-source-test.php
+      - name: Isolated reservation expiry decisions
+        run: php tests/bh4-reservation-expiry-contract-test.php
+      - name: Read-only expiry candidate planner fixtures
+        run: php tests/bh4-expiry-candidate-planner-test.php
+      - name: Shared booking lock race decision fixtures
+        run: php tests/bh4-booking-shared-lock-contract-test.php
+      - name: Existing payment and status lock identity guard
+        run: php tests/bh4-booking-lock-identity-source-test.php
+      - name: Stripe checkout retry and timeout fixtures
+        run: php tests/bh4-checkout-retry-contract-test.php
+      - name: Stripe Checkout session recovery fixtures
+        run: php tests/bh4-stripe-session-recovery-contract-test.php
+      - name: Stripe idempotency lost-response fixtures
+        run: php tests/bh4-stripe-idempotency-replay-test.php
+      - name: Stripe Checkout duplicate session fixtures
+        run: php tests/bh4-stripe-session-candidate-classifier-test.php
+      - name: Privacy-safe booking reconciliation report fixtures
+        run: php tests/bh4-booking-reconciliation-report-test.php
+      - name: Admin-only reconciliation access fixtures
+        run: php tests/bh4-reconciliation-access-contract-test.php
+      - name: Staging schema evidence gate fixtures
+        run: php tests/bh4-staging-schema-evidence-gate-test.php
+      - name: Plugin upgrade package rollback preflight fixtures
+        run: php tests/bh4-upgrade-package-preflight-test.php
+      - name: Prevent premature BH4 feature activation
+        run: php tests/bh4-feature-flags-disabled-source-test.php
+      - name: Portal shortcode and route source inventory
+        run: php tests/bh4-portal-shortcode-route-inventory-test.php
+      - name: Manager bootstrap dependency integrity
+        run: php tests/bh4-manager-bootstrap-dependencies-test.php
+      - name: Schema write entrypoint guard
+        run: php tests/bh4-schema-write-entrypoint-guard-test.php
+      - name: Booking background job safety fixtures
+        run: php tests/bh4-booking-job-safety-contract-test.php
+      - name: Expiry and payment concurrency gate fixtures
+        run: php tests/bh4-expiry-concurrency-gate-test.php
+      - name: Stripe timeout and duplicate checkout recovery fixtures
+        run: php tests/bh4-checkout-timeout-recovery-gate-test.php
+      - name: Stripe checkout create outcome fixtures
+        run: php tests/bh4-checkout-create-outcome-contract-test.php
+      - name: Checkout recovery record state fixtures
+        run: php tests/bh4-checkout-recovery-record-contract-test.php
+      - name: Insert-only checkout recovery storage fixtures
+        run: php tests/bh4-checkout-recovery-option-store-test.php
+      - name: Recovery compare-and-swap validation fixtures
+        run: php tests/bh4-checkout-recovery-cas-contract-test.php
+      - name: Atomic checkout recovery writer fixtures
+        run: php tests/bh4-checkout-recovery-atomic-writer-test.php
+      - name: Recovery storage adapter integration fixtures
+        run: php tests/bh4-checkout-recovery-storage-integration-test.php
+      - name: Checkout recovery runtime source guard
+        run: php tests/bh4-checkout-recovery-runtime-source-test.php
+      - name: Checkout recovery failure path source guard
+        run: php tests/bh4-checkout-recovery-failure-path-source-test.php
+      - name: Checkout recovery admin review source guard
+        run: php tests/bh4-checkout-recovery-admin-review-source-test.php
+      - name: Checkout recovery investigation triage fixtures
+        run: php tests/bh4-checkout-recovery-triage-test.php
+      - name: Checkout recovery admin registration source guard
+        run: php tests/bh4-checkout-recovery-admin-registration-source-test.php
+      - name: Checkout recovery admin permission fixtures
+        run: php tests/bh4-checkout-recovery-admin-permissions-test.php
+      - name: Stripe read-only verification fixtures
+        run: php tests/bh4-stripe-readonly-verification-gate-test.php
+      - name: Stripe read-only lookup response fixtures
+        run: php tests/bh4-stripe-readonly-lookup-contract-test.php
+      - name: Stripe read-only test-mode GET adapter fixtures
+        run: php tests/bh4-stripe-readonly-lookup-adapter-test.php
+      - name: Stripe payment-state consistency fixtures
+        run: php tests/bh4-stripe-readonly-payment-state-test.php
+      - name: Stripe reconciliation triage fixtures
+        run: php tests/bh4-stripe-reconciliation-triage-test.php
+      - name: Checkout recovery admin security hardening
+        run: php tests/bh4-checkout-recovery-admin-hardening-test.php
+      - name: Stripe recovery lookup eligibility
+        run: php tests/bh4-stripe-lookup-eligibility-test.php
+      - name: Legacy checkout and webhook lock source audit
+        run: php tests/bh4-checkout-webhook-lock-source-test.php
+      - name: Isolated BH4 booking reference fixtures
+        run: php tests/bh4-booking-reference-test.php
+      - name: Isolated BH4 activity API contract fixtures
+        run: php tests/bh4-activity-api-contract-test.php
+      - name: Isolated BH4 directory adapter fixtures
+        run: php tests/bh4-directory-adapter-test.php
+      - name: Isolated BH4 directory repository bridge fixtures
+        run: php tests/bh4-directory-repository-bridge-test.php
+      - name: Isolated BH4 directory filter contract fixtures
+        run: php tests/bh4-directory-filter-contract-test.php
+      - name: Isolated BH4 directory query plan fixtures
+        run: php tests/bh4-directory-query-plan-test.php
+      - name: Isolated BH4 directory SELECT contract fixtures
+        run: php tests/bh4-directory-select-contract-test.php
+      - name: Isolated BH4 directory SELECT response fixtures
+        run: php tests/bh4-directory-select-response-test.php
+      - name: Isolated BH4 directory schema inventory fixtures
+        run: php tests/bh4-directory-schema-check-test.php
+      - name: Isolated BH4 directory result parity fixtures
+        run: php tests/bh4-directory-parity-test.php
+      - name: Isolated BH4 directory public field parity fixtures
+        run: php tests/bh4-directory-field-parity-test.php
+      - name: Isolated BH4 directory scenario regression fixtures
+        run: php tests/bh4-directory-scenarios-test.php
+      - name: Isolated BH4 legacy web filter bridge fixtures
+        run: php tests/bh4-directory-web-filters-test.php
+      - name: Isolated BH4 directory timetable preview fixtures
+        run: php tests/bh4-directory-timetable-test.php
+      - name: Isolated BH4 directory card details fixtures
+        run: php tests/bh4-directory-card-details-test.php
+      - name: Isolated BH4 combined directory card fixtures
+        run: php tests/bh4-directory-combined-response-test.php
+      - name: Isolated BH4 public directory map marker fixtures
+        run: php tests/bh4-directory-map-markers-test.php
+      - name: Isolated BH4 plugin upgrade safety gate fixtures
+        run: php tests/bh4-plugin-upgrade-gate-test.php
+      - name: BH4 bootstrap hook registration regression
+        run: php tests/bh4-bootstrap-hook-audit-test.php

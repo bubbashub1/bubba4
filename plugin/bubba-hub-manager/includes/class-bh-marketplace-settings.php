@@ -751,16 +751,16 @@ final class BH_Marketplace_Settings_3 {
             return new WP_Error( 'hold_too_short', 'Checkout requires a longer capacity hold; no payment session created.' );
         }
         // Lock per booking; Stripe idempotency protects retries after network timeouts.
-        $lock = 'bh3_checkout_' . md5( $wpdb->prefix . ':' . $booking['id'] );
+        $lock = 'bh3_status_' . md5( $wpdb->prefix . ':' . $booking['id'] );
         if ( (int) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', $lock ) ) !== 1 ) {
             return new WP_Error( 'checkout_busy', 'Checkout is already being prepared.' );
         }
         try {
             $current = $wpdb->get_row( $wpdb->prepare(
-                "SELECT payment_status,stripe_checkout_session_id,reservation_expires_at FROM `{$table}` WHERE id=%d LIMIT 1",
+                "SELECT booking_status,payment_status,stripe_checkout_session_id,reservation_expires_at FROM `{$table}` WHERE id=%d LIMIT 1",
                 (int) $booking['id']
             ), ARRAY_A );
-            if ( ! $current || $current['payment_status'] !== 'pending' || ! empty( $current['stripe_checkout_session_id'] )
+            if ( ! $current || $current['booking_status'] !== 'reserved' || $current['payment_status'] !== 'pending' || ! empty( $current['stripe_checkout_session_id'] )
                 || strtotime( $current['reservation_expires_at'] . ' UTC' ) < time() + 30 * MINUTE_IN_SECONDS ) {
                 return new WP_Error( 'checkout_state_changed', 'Reservation is no longer eligible for checkout.' );
             }
@@ -804,6 +804,33 @@ final class BH_Marketplace_Settings_3 {
                     'bh3_estimated_processing_pence' => (string) $estimated_processing,
                 ),
             );
+            // BH4 recovery is opt-in on staging only. A durable insert-only
+            // attempt record is written BEFORE contacting Stripe. Any existing
+            // record blocks replay until verified reconciliation has occurred.
+            $bh4_recovery_enabled = defined( 'BH4_ENABLE_CHECKOUT_RECOVERY' )
+                && BH4_ENABLE_CHECKOUT_RECOVERY === true;
+            if ( $bh4_recovery_enabled ) {
+                require_once __DIR__ . '/class-bh4-checkout-recovery-record-contract.php';
+                require_once __DIR__ . '/class-bh4-checkout-recovery-option-store.php';
+                require_once __DIR__ . '/class-bh4-checkout-recovery-cas-contract.php';
+                require_once __DIR__ . '/class-bh4-checkout-recovery-atomic-writer.php';
+                $bh4_encoded_payload = wp_json_encode( $payload );
+                // Never record a fingerprint of an empty/failed JSON encoding.
+                // A malformed fingerprint could conceal a changed Stripe request.
+                if ( ! is_string( $bh4_encoded_payload ) || $bh4_encoded_payload === '' ) {
+                    return new WP_Error( 'checkout_payload_invalid',
+                        'Checkout could not be prepared safely. Please contact support.' );
+                }
+                $bh4_fingerprint = hash( 'sha256', $bh4_encoded_payload );
+                $bh4_attempt = BH4_Checkout_Recovery_Record_Contract::create(
+                    (int) $booking['id'], $bh4_fingerprint, time()
+                );
+                if ( empty( $bh4_attempt['ok'] )
+                    || ! BH4_Checkout_Recovery_Option_Store::insert_once( $bh4_attempt['record'] ) ) {
+                    return new WP_Error( 'checkout_reconciliation_required',
+                        'An earlier checkout attempt may exist. Please contact support before retrying payment.' );
+                }
+            }
             $response = wp_remote_post( 'https://api.stripe.com/v1/checkout/sessions', array(
                 'timeout' => 25,
                 'headers' => array(
@@ -812,7 +839,21 @@ final class BH_Marketplace_Settings_3 {
                 ),
                 'body' => $payload,
             ) );
-            if ( is_wp_error( $response ) ) { return new WP_Error( 'stripe_unavailable', 'Stripe checkout could not be reached.' ); }
+            if ( is_wp_error( $response ) ) {
+                if ( $bh4_recovery_enabled ) {
+                    $bh4_uncertain = BH4_Checkout_Recovery_Record_Contract::transition(
+                        $bh4_attempt['record'], 'remote_timeout'
+                    );
+                    if ( ! empty( $bh4_uncertain['ok'] ) ) {
+                        BH4_Checkout_Recovery_Option_Store::update_if_state(
+                            (int) $booking['id'], 'creating', $bh4_uncertain['record']
+                        );
+                    }
+                    return new WP_Error( 'checkout_reconciliation_required',
+                        'Payment session status is uncertain. Please contact support before retrying.' );
+                }
+                return new WP_Error( 'stripe_unavailable', 'Stripe checkout could not be reached.' );
+            }
             $data = json_decode( wp_remote_retrieve_body( $response ), true );
             if ( wp_remote_retrieve_response_code( $response ) !== 200 || ! is_array( $data )
                 || ! preg_match( '/^cs_test_[A-Za-z0-9_]+$/', (string) ( $data['id'] ?? '' ) )
@@ -821,15 +862,52 @@ final class BH_Marketplace_Settings_3 {
                 || ( $data['livemode'] ?? null ) !== false
                 || (int) ( $data['amount_total'] ?? -1 ) !== $parent_total
                 || ( $data['currency'] ?? '' ) !== 'gbp' ) {
+                if ( $bh4_recovery_enabled ) {
+                    $bh4_rejected = BH4_Checkout_Recovery_Record_Contract::transition(
+                        $bh4_attempt['record'], 'remote_rejected'
+                    );
+                    if ( ! empty( $bh4_rejected['ok'] ) ) {
+                        BH4_Checkout_Recovery_Option_Store::update_if_state(
+                            (int) $booking['id'], 'creating', $bh4_rejected['record']
+                        );
+                    }
+                    return new WP_Error( 'checkout_reconciliation_required',
+                        'Stripe did not return a verified Checkout session. Please contact support before retrying.' );
+                }
                 return new WP_Error( 'stripe_checkout_rejected', 'Stripe did not return a valid test Checkout session.' );
             }
             $saved = $wpdb->query( $wpdb->prepare(
                 "UPDATE `{$table}` SET stripe_checkout_session_id=%s,updated_at=%s
-                 WHERE id=%d AND payment_status='pending' AND stripe_checkout_session_id IS NULL",
+                 WHERE id=%d AND booking_status='reserved' AND payment_status='pending' AND stripe_checkout_session_id IS NULL",
                 $data['id'], current_time( 'mysql', true ), (int) $booking['id']
             ) );
             if ( $saved !== 1 ) {
+                if ( $bh4_recovery_enabled ) {
+                    $bh4_unsaved = BH4_Checkout_Recovery_Record_Contract::transition(
+                        $bh4_attempt['record'], 'remote_timeout'
+                    );
+                    if ( ! empty( $bh4_unsaved['ok'] ) ) {
+                        BH4_Checkout_Recovery_Option_Store::update_if_state(
+                            (int) $booking['id'], 'creating', $bh4_unsaved['record']
+                        );
+                    }
+                    return new WP_Error( 'checkout_reconciliation_required',
+                        'Checkout may exist but could not be saved. Please contact support before retrying.' );
+                }
                 return new WP_Error( 'checkout_not_saved', 'Checkout session could not be saved; manual reconciliation required.' );
+            }
+            if ( $bh4_recovery_enabled ) {
+                $bh4_saved = BH4_Checkout_Recovery_Record_Contract::transition(
+                    $bh4_attempt['record'], 'verified_session_saved', $data['id']
+                );
+                if ( empty( $bh4_saved['ok'] ) || ! BH4_Checkout_Recovery_Option_Store::update_if_state(
+                    (int) $booking['id'], 'creating', $bh4_saved['record']
+                ) ) {
+                    // The booking row already holds the session; do not issue
+                    // another Stripe request if recovery metadata cannot save.
+                    return new WP_Error( 'checkout_reconciliation_required',
+                        'Checkout was created but recovery tracking needs review.' );
+                }
             }
             return array( 'checkout_session_id' => $data['id'], 'checkout_url' => $data['url'],
                 'booking_id' => (int) $booking['id'], 'test_mode' => true );

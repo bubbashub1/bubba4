@@ -45,7 +45,7 @@ final class BH_Activity_Parity_3 {
         add_action( 'admin_post_bh3_activity_parity_migrate', array( __CLASS__, 'migrate' ) );
     }
     public static function migrate() {
-        if ( ! self::is_staging() || ! current_user_can( 'manage_options' ) ) {
+        if ( ! self::is_staging() || ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true || ! current_user_can( 'manage_options' ) ) {
             wp_die( 'Staging administrator permission required.', '', array( 'response' => 403 ) );
         }
         check_admin_referer( 'bh3_activity_parity_migrate' );

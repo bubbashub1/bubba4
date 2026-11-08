@@ -155,7 +155,6 @@ final class BH_Manager_3 {
         add_action( 'admin_menu', array( 'BH_Activity_Edit_3', 'register' ) );
         // admin-post.php does not fire admin_menu; register form handlers during admin_init.
         add_action( 'admin_init', static function () {
-            add_action( 'admin_post_bh3_update_activity', array( 'BH_Activity_Edit_3', 'save' ) );
             add_action( 'admin_post_bh3_change_activity_status', array( 'BH_Activity_Edit_3', 'change_status' ) );
         } );
         add_action( 'admin_menu', array( 'BH_Venues_3', 'register' ) );
@@ -194,6 +193,9 @@ final class BH_Manager_3 {
 
     /** Additive booking-only migration; requires confirmed staging backup. */
     public static function install_missing_booking_tables() {
+        if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true ) {
+            wp_die( 'BH4 schema changes disabled.', '', array( 'response' => 403 ) );
+        }
         if ( ! current_user_can( 'manage_options' ) || ! self::is_staging() ) {
             wp_die( 'Staging administrator permission required.', '', array( 'response' => 403 ) );
         }
@@ -212,6 +214,9 @@ final class BH_Manager_3 {
     }
 
     public static function install_schema() {
+        if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true ) {
+            wp_die( 'BH4 schema changes disabled.', '', array( 'response' => 403 ) );
+        }
         if ( ! current_user_can( 'manage_options' ) ) { wp_die( 'Administrator permission required.', '', array( 'response' => 403 ) ); }
         check_admin_referer( 'bh3_install_schema' );
         if ( ! self::is_staging() ) { wp_die( 'Only staging may install tables.', '', array( 'response' => 403 ) ); }

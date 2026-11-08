@@ -251,6 +251,9 @@ final class BH_Schema_3 {
 
     /** Must be invoked only by the explicit staging administrator action. */
     public static function install_missing_booking_tables() {
+        if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true ) {
+            return new WP_Error( 'bh4_schema_disabled', 'BH4 schema changes are disabled.' );
+        }
         if ( ! current_user_can( 'manage_options' )
             || strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) !== 'staging.bubbahub.co.uk' ) {
             return new WP_Error( 'bh3_forbidden', 'Staging administrator permission required.' );
@@ -287,6 +290,10 @@ final class BH_Schema_3 {
 
     /** Admin-only, explicitly invoked later; not called during plugin activation or page load. */
     public static function install() {
+        if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true
+            || strtolower( (string) wp_parse_url( home_url(), PHP_URL_HOST ) ) !== 'staging.bubbahub.co.uk' ) {
+            return new WP_Error( 'bh4_schema_disabled', 'BH4 schema installation is disabled outside explicitly approved staging.' );
+        }
         if ( ! current_user_can( 'manage_options' ) ) {
             return new WP_Error( 'bh3_forbidden', 'Administrator permission required.' );
         }
