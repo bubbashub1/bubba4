@@ -32,7 +32,9 @@ bh4_assert( is_array( $optional ) && $optional['em_event_id'] === null, 'optiona
 foreach ( array( 0, -1, '0', '-4', '12abc', '01', '1.0', 1.5, array( 1 ), null ) as $invalid ) {
     bh4_assert( BH4_Session_Mapping::propose( $invalid, 2 ) instanceof WP_Error, 'invalid activity rejected' );
     bh4_assert( BH4_Session_Mapping::propose( 1, $invalid ) instanceof WP_Error, 'invalid session rejected' );
-    bh4_assert( BH4_Session_Mapping::propose( 1, 2, $invalid ) instanceof WP_Error, 'invalid event rejected' );
+    if ( null !== $invalid ) {
+        bh4_assert( BH4_Session_Mapping::propose( 1, 2, $invalid ) instanceof WP_Error, 'invalid event rejected' );
+    }
 }
 $GLOBALS['bh4_test_admin'] = false;
 $denied = BH4_Session_Mapping::propose( 1, 2 );
