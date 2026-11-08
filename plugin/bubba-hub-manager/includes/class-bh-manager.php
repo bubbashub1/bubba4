@@ -249,10 +249,14 @@ final class BH_Manager_3 {
     }
 
 
-    /** Hide legacy leader navigation only; do not unregister pages, callbacks, or permissions. */
+    /** Keep one visible admin navigation path without removing existing screens or saved settings. */
     public static function consolidate_leader_admin_menus() {
+        // Leaders use the front-end portal; admin-only legacy pages remain directly accessible.
         remove_menu_page( 'bh3-my-listings' );
         remove_menu_page( 'bh3-leader-dashboard' );
+        // The Developments screen already includes the sector readiness matrix.
+        // Hide the redundant Workstreams menu entry but preserve its registered callback/URL.
+        remove_submenu_page( 'bubba-hub-3-status', 'bh3-workstreams' );
     }
 
     /** Register marketplace settings after the Bubba Hub parent admin menu exists. */
