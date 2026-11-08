@@ -113,6 +113,8 @@ jobs:
         run: php tests/bh4-manager-bootstrap-dependencies-test.php
       - name: Schema write entrypoint guard
         run: php tests/bh4-schema-write-entrypoint-guard-test.php
+      - name: Booking background job safety fixtures
+        run: php tests/bh4-booking-job-safety-contract-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
