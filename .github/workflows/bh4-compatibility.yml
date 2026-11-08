@@ -85,6 +85,8 @@ jobs:
         run: php tests/bh4-reservation-expiry-contract-test.php
       - name: Read-only expiry candidate planner fixtures
         run: php tests/bh4-expiry-candidate-planner-test.php
+      - name: Shared booking lock race decision fixtures
+        run: php tests/bh4-booking-shared-lock-contract-test.php
       - name: Isolated BH4 booking reference fixtures
         run: php tests/bh4-booking-reference-test.php
       - name: Isolated BH4 activity API contract fixtures
