@@ -15,7 +15,6 @@ foreach (array(
     "family_profile_ids",
     "booking_terms_consent",
     "share_child_details_consent",
-    "do_shortcode( '[fluentform id="' . \$form_id . '"]' )",
     "update_option( 'bh3_booking_form_id', \$booking_form_id, false )",
     "fluentform_forms",
 ) as $marker) {
