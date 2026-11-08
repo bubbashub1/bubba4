@@ -16,9 +16,9 @@ $confirm = bh4_method_source($source, 'confirm_verified_test_payment', 'stripe_s
 bh4_lock_check($status !== '' && $checkout !== '' && $confirm !== '', 'all three handler boundaries found');
 bh4_lock_check(strpos($status, "'bh3_status_' . md5(") !== false, 'status transition uses status lock');
 bh4_lock_check(strpos($confirm, "'bh3_status_' . md5(") !== false, 'payment confirmation shares status lock');
-bh4_lock_check(strpos($checkout, "'bh3_checkout_' . md5(") !== false, 'checkout still uses distinct lock');
+bh4_lock_check(strpos($checkout, "'bh3_status_' . md5(") !== false, 'checkout shares booking status lock');
 foreach (array($status,$checkout,$confirm) as $section) {
     bh4_lock_check(strpos($section, 'SELECT GET_LOCK(%s, 5)') !== false, 'lock acquired');
     bh4_lock_check(strpos($section, 'SELECT RELEASE_LOCK(%s)') !== false, 'lock released');
 }
-echo "PASS: payment/status lock identity and checkout lock separation (source-only)\n";
+echo "PASS: payment/status lock identity and checkout shared lock (source-only)\n";
