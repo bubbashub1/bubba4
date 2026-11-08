@@ -139,6 +139,8 @@ jobs:
         run: php tests/bh4-checkout-recovery-admin-review-source-test.php
       - name: Checkout recovery investigation triage fixtures
         run: php tests/bh4-checkout-recovery-triage-test.php
+      - name: Checkout recovery admin registration source guard
+        run: php tests/bh4-checkout-recovery-admin-registration-source-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
