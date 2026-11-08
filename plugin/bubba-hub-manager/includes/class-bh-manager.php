@@ -155,7 +155,6 @@ final class BH_Manager_3 {
         add_action( 'admin_menu', array( 'BH_Activity_Edit_3', 'register' ) );
         // admin-post.php does not fire admin_menu; register form handlers during admin_init.
         add_action( 'admin_init', static function () {
-            add_action( 'admin_post_bh3_update_activity', array( 'BH_Activity_Edit_3', 'save' ) );
             add_action( 'admin_post_bh3_change_activity_status', array( 'BH_Activity_Edit_3', 'change_status' ) );
         } );
         add_action( 'admin_menu', array( 'BH_Venues_3', 'register' ) );
