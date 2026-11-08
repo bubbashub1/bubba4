@@ -88,3 +88,5 @@ jobs:
         run: php tests/bh4-directory-card-details-test.php
       - name: Isolated BH4 combined directory card fixtures
         run: php tests/bh4-directory-combined-response-test.php
+      - name: Isolated BH4 public directory map marker fixtures
+        run: php tests/bh4-directory-map-markers-test.php
