@@ -30,6 +30,10 @@ jobs:
           print('Duplicate class candidates:', len(audit['duplicate_class_definitions']))
           print('Shortcodes:', len(audit['shortcodes']))
           print('Potential schema files:', len(audit['potential_schema_change_files']))
+          for name, paths in sorted(audit['duplicate_class_definitions'].items()):
+              print('DUPLICATE_CLASS', name, '::', ', '.join(paths))
+          for path in audit['potential_schema_change_files']:
+              print('SCHEMA_REVIEW', path)
           PY
       - name: Upload audit artifact
         uses: actions/upload-artifact@v4
