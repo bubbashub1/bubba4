@@ -24,6 +24,13 @@ final class BH4_Stripe_Readonly_Verification_Gate {
    ||!in_array($session['payment_status']??null,array('paid','unpaid','no_payment_required'),true)) {
    return array('verified'=>false,'reason'=>'invalid_stripe_status');
   }
+  // Inconsistent or zero-payment states must never be mistaken for
+  // evidence that a paid booking is complete.
+  if (($session['payment_status']??null)==='no_payment_required'
+   ||(($session['status']??null)==='open' && ($session['payment_status']??null)==='paid')
+   ||(($session['status']??null)==='expired' && ($session['payment_status']??null)==='paid')) {
+   return array('verified'=>false,'reason'=>'inconsistent_payment_state');
+  }
   // Verification is not payment confirmation. Webhook and booking state
   // still govern fulfillment; this result only supports human review.
   return array('verified'=>true,'reason'=>'matching_test_session',
