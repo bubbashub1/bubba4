@@ -54,3 +54,5 @@ jobs:
         run: php tests/bh4-session-mapping-test.php
       - name: Isolated BH4 recurring session fixtures
         run: php tests/bh4-recurrence-fixtures-test.php
+      - name: Isolated BH4 checkout ownership fixtures
+        run: php tests/bh4-checkout-ownership-test.php
