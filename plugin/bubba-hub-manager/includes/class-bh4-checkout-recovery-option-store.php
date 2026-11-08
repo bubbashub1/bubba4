@@ -28,9 +28,12 @@ final class BH4_Checkout_Recovery_Option_Store {
   return is_array($record)?$record:null;
  }
  public static function update_if_state($booking_id,$expected_state,$next_record) {
-  // WordPress update_option is not compare-and-swap. Never use it for
-  // checkout state transitions without an external shared booking lock
-  // and a storage primitive with atomic conditional update semantics.
-  return false;
+  // The atomic writer verifies ownership of the shared booking lock,
+  // checks the persisted option bytes, and rejects stale transitions.
+  // This adapter is not registered in the checkout runtime yet.
+  if (!class_exists('BH4_Checkout_Recovery_Atomic_Writer')) {
+   return false;
+  }
+  return BH4_Checkout_Recovery_Atomic_Writer::update($booking_id,$expected_state,$next_record) === true;
  }
 }
