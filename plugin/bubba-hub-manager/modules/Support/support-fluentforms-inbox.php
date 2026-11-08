@@ -19,6 +19,7 @@ function bh_support_status_table(): string {
 
 add_action('admin_post_bh3_support_install_schema', static function (): void {
     // Explicit administrator-only schema install, staging only.
+    if ( ! defined( 'BH4_ALLOW_STAGING_SCHEMA_CHANGES' ) || BH4_ALLOW_STAGING_SCHEMA_CHANGES !== true ) wp_die( 'BH4 schema changes disabled.', '', ['response' => 403] );
     if (!current_user_can('manage_options')) wp_die('Administrator permission required.', '', ['response' => 403]);
     check_admin_referer('bh3_support_install_schema');
     if (strtolower((string) wp_parse_url(home_url(), PHP_URL_HOST)) !== 'staging.bubbahub.co.uk') wp_die('Staging only.', '', ['response' => 403]);
