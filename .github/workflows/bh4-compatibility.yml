@@ -121,6 +121,8 @@ jobs:
         run: php tests/bh4-checkout-timeout-recovery-gate-test.php
       - name: Stripe checkout create outcome fixtures
         run: php tests/bh4-checkout-create-outcome-contract-test.php
+      - name: Checkout recovery record state fixtures
+        run: php tests/bh4-checkout-recovery-record-contract-test.php
       - name: Legacy checkout and webhook lock source audit
         run: php tests/bh4-checkout-webhook-lock-source-test.php
       - name: Isolated BH4 booking reference fixtures
