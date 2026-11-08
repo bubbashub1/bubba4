@@ -27,6 +27,11 @@ function bh4_assert( $condition, $description ) {
 $valid = BH4_Session_Mapping::propose( 12, '34', '56' );
 bh4_assert( is_array( $valid ) && $valid['bh_activity_id'] === 12 && $valid['bh_session_id'] === 34 && $valid['em_event_id'] === 56, 'positive IDs map correctly' );
 bh4_assert( $valid['status'] === 'unverified' && $valid['booking_migration_allowed'] === false && $valid['event_creation_allowed'] === false, 'no migration or creation authorised' );
+$timeslot = BH4_Session_Mapping::propose( 12, 34, '56:78' );
+bh4_assert( is_array( $timeslot ) && $timeslot['em_event_id'] === '56:78', 'Events Manager timeslot UID preserved' );
+foreach ( array( '1:0', '0:1', '1:2:3', '1:abc', '01:2', '1:02' ) as $invalid_uid ) {
+    bh4_assert( BH4_Session_Mapping::propose( 1, 2, $invalid_uid ) instanceof WP_Error, 'invalid timeslot UID rejected' );
+}
 $optional = BH4_Session_Mapping::propose( '1', 2 );
 bh4_assert( is_array( $optional ) && $optional['em_event_id'] === null, 'optional event remains unset' );
 foreach ( array( 0, -1, '0', '-4', '12abc', '01', '1.0', 1.5, array( 1 ), null ) as $invalid ) {
