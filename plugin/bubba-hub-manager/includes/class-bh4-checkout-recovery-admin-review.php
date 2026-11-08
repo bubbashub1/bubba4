@@ -7,7 +7,9 @@
 if(!defined('ABSPATH')) {exit;}
 final class BH4_Checkout_Recovery_Admin_Review {
  public static function register() {
-  add_submenu_page('tools.php','Checkout Recovery Review','Checkout Recovery Review',
+  // A Tools submenu would open without the required nonce. Register a
+  // hidden page instead; the administrator notice supplies a signed link.
+  add_submenu_page(null,'Checkout Recovery Review','Checkout Recovery Review',
    'manage_options','bh4-checkout-recovery',array(__CLASS__,'render'));
  }
  public static function render() {
