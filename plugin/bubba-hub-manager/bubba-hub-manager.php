@@ -12,6 +12,16 @@
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
 }
+// Prevent a fatal class redeclaration if the legacy BubbaWP plugin is already loaded.
+// This is a safety stop, not permission to run both plugins together.
+if ( class_exists( 'BH_Manager_3', false ) || defined( 'BUBBA_HUB_MANAGER_PATH' ) ) {
+    add_action( 'admin_notices', static function () {
+        if ( current_user_can( 'manage_options' ) ) {
+            echo '<div class="notice notice-error"><p>' . esc_html__( 'Bubba Hub 4.0 did not start because another Bubba Hub Manager installation is already loaded. Activate only one version after staging migration checks.', 'bubba-hub-manager' ) . '</p></div>';
+        }
+    } );
+    return;
+}
 define( 'BUBBA_HUB_MANAGER_VERSION', '0.1.0' );
 define( 'BUBBA_HUB_MANAGER_PATH', plugin_dir_path( __FILE__ ) );
 require_once BUBBA_HUB_MANAGER_PATH . 'includes/class-bh-manager.php';
