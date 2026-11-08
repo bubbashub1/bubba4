@@ -1,0 +1,216 @@
+.bh3-family{max-width:1180px;margin:0 auto;padding:clamp(16px,4vw,48px);color:#203c34;font-family:inherit}.bh3-family__hero{background:#eaf4ef;border-radius:24px;padding:clamp(24px,5vw,56px)}.bh3-family__eyebrow{font-size:.85rem;font-weight:750;letter-spacing:.06em;text-transform:uppercase;color:#386d55}.bh3-family h1{font-size:clamp(1.9rem,4vw,3rem);line-height:1.15;margin:.5rem 0 1rem}.bh3-family__hero p{max-width:650px}.bh3-family__notice{margin:22px 0;padding:14px 18px;background:#f7f8f5;border-left:4px solid #60866e;border-radius:8px}.bh3-family__grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.bh3-family__card{background:#fff;border:1px solid #d9e5df;border-radius:18px;padding:24px;box-shadow:0 3px 14px rgba(24,57,40,.05)}.bh3-family__card h2{font-size:1.2rem;margin:0 0 10px}.bh3-family__card p{margin:0;color:#46594f}@media(max-width:650px){.bh3-family__grid{grid-template-columns:1fr}.bh3-family__card{padding:20px}}
+.bh3-family__private{margin:24px 0}.bh3-family__private .bh3-family__card{border-color:#a9cbb8;background:#fbfdfb}.bh3-family__items{list-style:none;padding:0;margin:12px 0;display:grid;gap:8px}.bh3-family__items li{padding:11px 13px;border:1px solid #e1ebe5;border-radius:10px;background:#fff;display:flex;justify-content:space-between;align-items:center;gap:12px}.bh3-family__status{font-size:.75rem;font-weight:700;background:#e1f1e7;color:#285e42;border-radius:999px;padding:4px 9px}.bh3-family__private p+p{margin-top:10px}
+
+.bh3-family__edit{display:grid;gap:9px;padding:14px 0;border-top:1px solid #e1ebe5;margin-top:14px}.bh3-family__edit label{font-size:.9rem;font-weight:700}.bh3-family__edit input{width:100%;min-width:0;box-sizing:border-box;padding:12px;border:1px solid #afc9bb;border-radius:10px;font:inherit}.bh3-family__edit button{justify-self:start;background:#205d46;color:#fff;border:0;border-radius:10px;padding:11px 18px;font:inherit;font-weight:700;cursor:pointer}.bh3-family__edit button:focus-visible,.bh3-family__edit input:focus-visible{outline:3px solid #7eae92;outline-offset:2px}
+
+.bh3-family__private .bh3-family__items li{flex-wrap:wrap}.bh3-family__items form{display:inline-flex;margin:0}.bh3-family__action{border:1px solid #b9d1c2;border-radius:8px;background:#f3f8f5;color:#205d46;font:inherit;font-size:.82rem;font-weight:700;padding:8px 11px;cursor:pointer}.bh3-family__action:hover{background:#e4f1e9}.bh3-family__action:focus-visible{outline:3px solid #7eae92;outline-offset:2px}
+
+.bh3-family__planner-summary{display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;background:#e9f4ed;color:#205d46;font-size:.88rem;font-weight:700}.bh3-family__private .bh3-family__items li{display:flex;align-items:center;gap:9px;padding:12px 0;min-width:0;overflow-wrap:anywhere}.bh3-family__private .bh3-family__items li>span:first-child{flex:1 1 100%;font-weight:650}.bh3-family__private .bh3-family__items li .bh3-family__status{white-space:nowrap}.bh3-family__private .bh3-family__items li form{flex:0 0 auto}@media(max-width:600px){.bh3-family__private{grid-template-columns:minmax(0,1fr)}.bh3-family__private .bh3-family__card{min-width:0}.bh3-family__private .bh3-family__items li{align-items:stretch}.bh3-family__private .bh3-family__items li form{flex:1 1 auto}.bh3-family__private .bh3-family__items li form button{width:100%;min-height:42px}}
+
+/* Expandable family activity collections: compact, keyboard-friendly links. */
+.bh3-family__private .bh3-family__card>p>a{display:inline-flex;align-items:center;min-height:40px;padding:8px 12px;border:1px solid currentColor;border-radius:10px;font-weight:650;text-decoration:none}.bh3-family__private .bh3-family__card>p>a:hover,.bh3-family__private .bh3-family__card>p>a:focus-visible{text-decoration:underline}.bh3-family__private .bh3-family__items a{color:inherit;text-decoration:underline;text-underline-offset:3px}.bh3-family__private .bh3-family__items a:focus-visible{outline:3px solid currentColor;outline-offset:3px}
+
+.bh3-family__filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}.bh3-family__filters a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:7px 13px;border:1px solid #cbd8cf;border-radius:999px;color:#205d46;text-decoration:none;font-weight:650}.bh3-family__filters a[aria-current=page]{background:#205d46;color:#fff;border-color:#205d46}.bh3-family__filters a:focus-visible{outline:3px solid #205d46;outline-offset:3px}
+
+.bh3-family__search{display:flex;flex-wrap:wrap;gap:8px;align-items:end;margin:12px 0 16px}.bh3-family__search label{flex:1 1 100%;font-weight:650}.bh3-family__search input{flex:1 1 180px;min-width:0;min-height:42px;padding:9px 12px;border:1px solid #b8c9c0;border-radius:10px}.bh3-family__search button{min-height:42px;padding:9px 16px;border:0;border-radius:10px;background:#205d46;color:#fff;font-weight:700}.bh3-family__search>a{display:inline-flex;align-items:center;min-height:42px;padding:9px}
+
+.bh3-family__sort{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 14px}.bh3-family__sort label{font-weight:650}.bh3-family__sort select{min-height:42px;max-width:100%;padding:8px 10px;border:1px solid #b8c9c0;border-radius:10px;background:#fff}.bh3-family__sort button{min-height:42px;padding:9px 14px;border:0;border-radius:10px;background:#205d46;color:#fff;font-weight:700}
+
+.bh3-family__filters{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 16px}.bh3-family__filters a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:8px 15px;border:1px solid #b8cfc3;border-radius:999px;color:#245b45;text-decoration:none;font-size:.92rem;font-weight:650}.bh3-family__filters a[aria-current=page]{background:#245b45;color:#fff;border-color:#245b45}.bh3-family__filters a:focus-visible{outline:3px solid #245b45;outline-offset:3px}@media(max-width:420px){.bh3-family__filters a{flex:1 1 auto}}
+
+.bh3-family__profiles{display:grid;gap:12px;margin:18px 0}.bh3-family__profiles h3{margin:14px 0 2px;font-size:1.05rem}.bh3-family__profile-list{list-style:none;padding:0;margin:0;display:grid;gap:10px}.bh3-family__profile-list li{display:flex;flex-direction:column;gap:3px;padding:14px 16px;border:1px solid #d8e7dd;border-radius:12px;background:#f7fbf8;min-width:0;overflow-wrap:anywhere}.bh3-family__profile-list li strong{color:#214f3d}.bh3-family__profile-list li span{font-size:.9rem;color:#4d6559}@media(min-width:650px){.bh3-family__profile-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.bh3-family__create-profiles{display:grid;gap:14px;margin:20px 0;padding-top:16px;border-top:1px solid #d8e7dd}.bh3-family__create-profiles h3{margin:0}.bh3-family__create-profiles .bh3-family__edit{display:grid;gap:9px;padding:16px;border:1px solid #d8e7dd;border-radius:12px}.bh3-family__create-profiles input{min-width:0;width:100%;max-width:100%;box-sizing:border-box}.bh3-family__create-profiles button{min-height:44px}@media(min-width:700px){.bh3-family__create-profiles{grid-template-columns:repeat(2,minmax(0,1fr))}.bh3-family__create-profiles>h3{grid-column:1/-1}}
+
+/* Modern Family Hub dashboard: content-led sizing, accessible navigation and compact empty states. */
+.bh3-family{max-width:1380px;width:100%;box-sizing:border-box;padding:clamp(16px,2.5vw,34px);color:#193e32}
+.bh3-family__hero{background:linear-gradient(120deg,#e5f2e9,#f5f9f3);border:1px solid #d6e9dd;border-radius:22px;padding:clamp(24px,3.5vw,42px)}
+.bh3-family__hero h1{letter-spacing:-.035em}
+.bh3-family__quick-nav{display:flex;flex-wrap:wrap;gap:9px;margin:20px 0 4px}
+.bh3-family__quick-nav a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 17px;background:#fff;border:1px solid #c8dfd2;border-radius:999px;color:#1d5943;font-weight:700;text-decoration:none;transition:background .15s ease,transform .15s ease}
+.bh3-family__quick-nav a:hover{background:#e9f4ed;transform:translateY(-1px)}
+.bh3-family__quick-nav a:focus-visible{outline:3px solid #3c8767;outline-offset:3px}
+.bh3-family__private{align-items:start;gap:16px;margin:18px 0}
+.bh3-family__private .bh3-family__card{background:#fff;border:1px solid #dce9e0;box-shadow:0 6px 22px rgba(19,64,42,.045);padding:clamp(18px,2vw,26px);scroll-margin-top:95px}
+.bh3-family__private .bh3-family__card--family{order:-3;grid-column:1/-1}
+.bh3-family__private .bh3-family__card--saved{order:-2}
+.bh3-family__private .bh3-family__card--planner{order:-1}
+.bh3-family__private .bh3-family__card h2{font-size:1.24rem;letter-spacing:-.02em;margin-bottom:12px}
+.bh3-family__private .bh3-family__card>p{line-height:1.6}
+.bh3-family__private .bh3-family__card--family .bh3-family__profiles{grid-template-columns:1fr 1fr;column-gap:22px}
+.bh3-family__private input:focus-visible,.bh3-family__private select:focus-visible,.bh3-family__private button:focus-visible{outline:3px solid #3c8767;outline-offset:2px}
+.bh3-family__private button{cursor:pointer;transition:filter .15s ease}
+.bh3-family__private button:hover{filter:brightness(1.07)}
+@media(max-width:700px){.bh3-family__private .bh3-family__card--family .bh3-family__profiles{grid-template-columns:1fr}.bh3-family__quick-nav a{flex:1 1 auto}.bh3-family__private{grid-template-columns:minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){.bh3-family__quick-nav a,.bh3-family__private button{transition:none}}
+
+/* Family dashboard refresh — profile-first, warm neutral surfaces. */
+.bh3-family{--bh-ink:#213d35;--bh-line:#e4e9e4;--bh-surface:#fff;--bh-muted:#657c72;max-width:1280px;color:var(--bh-ink);background:transparent}
+.bh3-family__hero{background:#fff;border:1px solid var(--bh-line);border-radius:22px;box-shadow:0 2px 4px rgba(22,51,39,.025);padding:clamp(22px,3vw,38px)}
+.bh3-family__hero h1{font-family:inherit;font-weight:750;font-size:clamp(1.8rem,3vw,2.6rem)}
+.bh3-family__notice{border-left:3px solid #d4e4d8;background:#f7f9f6;color:#415d50}
+.bh3-family__private{gap:20px;align-items:start}
+.bh3-family__private .bh3-family__card{background:#fff;border:1px solid var(--bh-line);border-radius:22px;box-shadow:0 2px 3px rgba(25,58,43,.04);padding:clamp(20px,2.4vw,30px)}
+.bh3-family__private .bh3-family__card--family{grid-column:1/-1;order:0}
+.bh3-family__private .bh3-family__card--saved{order:1}
+.bh3-family__private .bh3-family__card--planner{order:2}
+.bh3-family__section-heading{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:10px}
+.bh3-family__section-heading h2{margin:4px 0 0!important;font-size:1.4rem!important}
+.bh3-family__kicker{display:inline-block;color:#b06d29;background:#fff1d7;padding:5px 9px;border-radius:6px;font-size:.68rem;letter-spacing:.07em;font-weight:800}
+.bh3-family__count{font-size:.8rem;color:#688176;white-space:nowrap}
+.bh3-family__private .bh3-family__card--family .bh3-family__profiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 16px;margin:20px 0}
+.bh3-family__private .bh3-family__profiles h3{font-size:.82rem;color:#4f6a5e;margin:0;grid-row:1}
+.bh3-family__private .bh3-family__profiles h3:nth-of-type(2){grid-column:2}
+.bh3-family__private .bh3-family__profiles .bh3-family__empty-profile{min-height:120px;display:flex;gap:14px;align-items:flex-start;padding:20px;border:1px solid #e3e8e3;border-radius:15px;background:#fcfdfb}
+.bh3-family__empty-profile strong{display:block;margin:4px 0 6px;font-size:1rem}
+.bh3-family__empty-profile p{font-size:.85rem;line-height:1.5}
+.bh3-family__avatar{width:44px;height:44px;flex:0 0 44px;display:inline-flex;align-items:center;justify-content:center;background:#fff0bf;border:1px solid #f7e7ad;border-radius:50%;font-size:1.3rem}
+.bh3-family__profile-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.bh3-family__profile-list li{background:#fcfdfb;border:1px solid #e3e8e3;border-radius:15px;min-height:120px;padding:17px;box-sizing:border-box}
+.bh3-family__profile-list li strong{font-size:1rem}
+.bh3-family__profile-list li span:not(.bh3-family__avatar){font-size:.8rem}
+.bh3-family__quick-nav{margin:18px 0 8px}
+.bh3-family__quick-nav a{border-color:#e1e9e3;background:#fff;color:#284e3e}
+.bh3-family__private .bh3-family__card--saved,.bh3-family__private .bh3-family__card--planner{min-height:160px}
+.bh3-family__planner-summary{background:#f0f5f1;color:#375d4c}
+@media(max-width:700px){.bh3-family__private .bh3-family__card--family .bh3-family__profiles{grid-template-columns:minmax(0,1fr)}.bh3-family__private .bh3-family__profiles h3,.bh3-family__private .bh3-family__profiles h3:nth-of-type(2){grid-column:auto;grid-row:auto}.bh3-family__private .bh3-family__card{border-radius:17px}.bh3-family__profile-list{grid-template-columns:minmax(0,1fr)}}
+
+/* Family preferences */
+.bh3-family__private .bh3-family__card--preferences{grid-column:1/-1;order:1}
+.bh3-family__private .bh3-family__card--saved{order:2}
+.bh3-family__private .bh3-family__card--planner{order:3}
+.bh3-family__preferences-form{display:grid;gap:22px;margin-top:20px}
+.bh3-family__preferences-form fieldset{border:0;padding:0;margin:0;min-width:0}
+.bh3-family__preferences-form legend{font-weight:750;font-size:1rem;margin-bottom:12px}
+.bh3-family__choice-grid{display:flex;flex-wrap:wrap;gap:9px}
+.bh3-family__choice-grid label{display:inline-flex;align-items:center;cursor:pointer;position:relative}
+.bh3-family__choice-grid input{position:absolute;opacity:0;width:1px;height:1px}
+.bh3-family__choice-grid span{display:inline-flex;align-items:center;justify-content:center;min-height:43px;padding:9px 15px;border:1px solid #d6e4da;border-radius:12px;background:#f8faf7;color:#315646;font-size:.9rem;font-weight:650;transition:background .15s ease,border-color .15s ease}
+.bh3-family__choice-grid input:checked+span{background:#e0f1e5;border-color:#4f9671;color:#174c33}
+.bh3-family__choice-grid input:focus-visible+span{outline:3px solid #387b5c;outline-offset:2px}
+.bh3-family__choice-grid input:disabled+span{opacity:.8;cursor:default}
+.bh3-family__location-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.bh3-family__location-grid label{display:grid;gap:8px;font-weight:650;font-size:.9rem}
+.bh3-family__location-grid input,.bh3-family__location-grid select{width:100%;min-width:0;box-sizing:border-box;min-height:45px;padding:10px 12px;border:1px solid #ccdcd1;border-radius:10px;background:#fff;font:inherit}
+.bh3-family__preferences-form>button{justify-self:start;min-height:46px;padding:12px 22px;background:#205d46;color:#fff;border:0;border-radius:12px;font:inherit;font-weight:750;cursor:pointer}
+.bh3-family__preview-note{margin-top:12px!important;padding:12px 14px;border-radius:10px;background:#f5f7f3;font-size:.88rem}
+@media(max-width:700px){.bh3-family__location-grid{grid-template-columns:1fr}.bh3-family__choice-grid--days label{flex:1 1 calc(33.33% - 9px)}.bh3-family__choice-grid--days span{width:100%}.bh3-family__preferences-form>button{width:100%}}
+
+.bh3-family__private .bh3-family__card--suggestions{grid-column:1/-1;order:2}
+.bh3-family__private .bh3-family__card--saved{order:3}
+.bh3-family__private .bh3-family__card--planner{order:4}
+.bh3-family__suggestion-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:20px 0 10px}
+.bh3-family__suggestion{background:#f9fbf8;border:1px solid #e1e9e1;border-radius:15px;padding:18px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.bh3-family__suggestion h3{font-size:1.05rem;line-height:1.35;margin:0;color:#1d4033}
+.bh3-family__suggestion p{font-size:.88rem}
+.bh3-family__suggestion-category{align-self:start;padding:5px 9px;border-radius:6px;background:#fff0d7;color:#9c6224;font-size:.74rem;font-weight:750}
+.bh3-family__free-tag{align-self:start;border-radius:7px;background:#e3f2e6;padding:4px 9px;color:#245b3b;font-size:.8rem;font-weight:700}
+.bh3-family__suggestion a{margin-top:auto;color:#1b5a41;font-weight:750;text-underline-offset:3px}
+.bh3-family__matching-note{font-size:.8rem;color:#61766a}
+.bh3-family__suggestions-empty{padding:20px;border:1px dashed #d5e3d7;border-radius:12px;margin:15px 0!important}
+@media(max-width:850px){.bh3-family__suggestion-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:550px){.bh3-family__suggestion-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Dedicated Family Settings page: use full content width, not dashboard columns. */
+.bh3-family__settings-page{width:100%;max-width:none;margin:0 auto;padding:0}
+.bh3-family__settings-page>.bh3-family__grid{display:block!important;width:100%;max-width:none}
+.bh3-family__settings-page .bh3-family__card--preferences{width:100%;max-width:none;box-sizing:border-box;margin:0}
+.bh3-family__settings-page .bh3-family__preferences-form{max-width:none}
+.bh3-family__settings-page>p:first-child{margin:0 0 16px}
+.bh3-family__settings-page .bh3-family__location-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media(max-width:700px){.bh3-family__settings-page .bh3-family__location-grid{grid-template-columns:1fr}}
+
+/* Family Settings: account and preferences share the same wide layout. */
+.bh3-family__settings-page .bh3-family__card--account{width:100%;max-width:none;box-sizing:border-box;margin:0 0 18px}
+.bh3-family__account-form{display:grid;gap:15px;margin-top:20px}
+.bh3-family__account-form .bh3-family__location-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+.bh3-family__account-form input[readonly]{background:#f2f5f2;color:#526459}
+.bh3-family__account-form button{justify-self:start;border:0;border-radius:12px;background:#205d46;color:#fff;padding:12px 22px;min-height:46px;font:inherit;font-weight:750;cursor:pointer}
+@media(max-width:700px){.bh3-family__account-form .bh3-family__location-grid{grid-template-columns:1fr}.bh3-family__account-form button{width:100%}}
+
+/* Standalone settings: override the theme's generic grid/form rules. */
+body .bh3-family.bh3-family__settings-page > .bh3-family__grid.bh3-family__private{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:20px!important;
+ grid-template-columns:none!important;width:100%!important;max-width:100%!important;
+}
+body .bh3-family__settings-page .bh3-family__card--account,
+body .bh3-family__settings-page .bh3-family__card--preferences{
+ display:block!important;flex:none!important;grid-column:1/-1!important;width:100%!important;max-width:100%!important;
+ margin:0!important;padding:clamp(20px,3vw,34px)!important;box-sizing:border-box!important;
+}
+body .bh3-family__settings-page .bh3-family__account-form,
+body .bh3-family__settings-page .bh3-family__preferences-form{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:22px!important}
+body .bh3-family__settings-page .bh3-family__location-grid{
+ display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:18px!important;width:100%!important;
+}
+body .bh3-family__settings-page .bh3-family__location-grid>label{
+ display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:8px!important;
+ min-width:0!important;font-weight:650!important;
+}
+body .bh3-family__settings-page .bh3-family__location-grid input,
+body .bh3-family__settings-page .bh3-family__location-grid select{
+ display:block!important;width:100%!important;max-width:none!important;min-height:46px!important;
+ box-sizing:border-box!important;margin:0!important;padding:10px 12px!important;
+}
+body .bh3-family__settings-page .bh3-family__preferences-form fieldset{
+ display:block!important;min-width:0!important;width:100%!important;box-sizing:border-box!important;
+ border:0!important;margin:0!important;padding:0!important;
+}
+body .bh3-family__settings-page .bh3-family__preferences-form legend{
+ display:block!important;width:100%!important;margin:0 0 12px!important;padding:0!important;font-weight:750!important;
+}
+body .bh3-family__settings-page .bh3-family__choice-grid{
+ display:flex!important;flex-wrap:wrap!important;gap:10px!important;align-items:stretch!important;
+}
+body .bh3-family__settings-page .bh3-family__choice-grid>label{
+ position:relative!important;display:inline-flex!important;align-items:center!important;margin:0!important;padding:0!important;cursor:pointer!important;
+}
+body .bh3-family__settings-page .bh3-family__choice-grid>label>input[type=checkbox]{
+ position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-height:0!important;margin:0!important;
+}
+body .bh3-family__settings-page .bh3-family__choice-grid>label>span{
+ display:inline-flex!important;align-items:center!important;justify-content:center!important;
+ padding:10px 16px!important;min-height:44px!important;border:1px solid #d4e3d7!important;
+ border-radius:12px!important;background:#f8faf7!important;color:#315646!important;font-size:.92rem!important;font-weight:650!important;
+}
+body .bh3-family__settings-page .bh3-family__choice-grid>label>input:checked+span{
+ background:#e0f1e5!important;border-color:#4f9671!important;color:#174c33!important;
+}
+body .bh3-family__settings-page .bh3-family__choice-grid>label>input:focus-visible+span{outline:3px solid #387b5c!important;outline-offset:2px!important}
+@media(max-width:700px){
+ body .bh3-family__settings-page .bh3-family__location-grid{grid-template-columns:1fr!important}
+ body .bh3-family__settings-page .bh3-family__choice-grid--days>label{flex:1 1 calc(33.333% - 10px)!important}
+ body .bh3-family__settings-page .bh3-family__choice-grid--days>label>span{width:100%!important}
+}
+
+/* Legacy-inspired notification settings, isolated from generic theme forms. */
+body .bh3-family__settings-page .bh3-family__card--notifications{display:block!important;width:100%!important;max-width:none!important;box-sizing:border-box!important;margin:0!important;padding:clamp(20px,3vw,34px)!important}
+.bh3-family__notification-form{display:flex;flex-direction:column;gap:17px;margin-top:20px}
+.bh3-family__notification-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+body .bh3-family__settings-page .bh3-family__notification-option{display:flex!important;align-items:flex-start!important;gap:13px!important;padding:16px!important;border:1px solid #dce8de!important;border-radius:13px!important;background:#fafcf9!important;margin:0!important;cursor:pointer!important}
+body .bh3-family__settings-page .bh3-family__notification-option input[type=checkbox]{flex:none!important;width:19px!important;height:19px!important;margin:3px 0 0!important;accent-color:#236348}
+.bh3-family__notification-option span{display:flex;flex-direction:column;gap:5px;min-width:0}
+.bh3-family__notification-option strong{color:#214a38;font-size:.95rem}
+.bh3-family__notification-option small{font-size:.84rem;color:#60776a;line-height:1.5}
+.bh3-family__notification-form h3{margin:10px 0 0;color:#234c3b}
+.bh3-family__notification-form>button{align-self:flex-start;min-height:46px;padding:12px 22px;border:0;border-radius:12px;background:#205d46;color:#fff;font:inherit;font-weight:750;cursor:pointer}
+@media(max-width:700px){.bh3-family__notification-list{grid-template-columns:1fr}.bh3-family__notification-form>button{width:100%}}
+
+/* Leader-inspired settings sidebar */
+body .bh3-family__settings-page .bh3-family__settings-layout{display:grid!important;grid-template-columns:235px minmax(0,1fr)!important;gap:24px!important;align-items:start!important;width:100%!important}
+.bh3-family__settings-content{min-width:0;width:100%}
+body .bh3-family__settings-page .bh3-family__settings-sidebar{position:sticky;top:30px;display:flex;flex-direction:column;gap:5px;padding:17px;background:#fff;border:1px solid #e0e8e0;border-radius:17px;box-shadow:0 4px 18px rgba(29,65,46,.04)}
+.bh3-family__sidebar-heading{display:flex;flex-direction:column;gap:8px;padding:5px 9px 16px;margin-bottom:6px;border-bottom:1px solid #e6ede7}
+.bh3-family__sidebar-heading strong{font-size:1.04rem;color:#1d4936}
+body .bh3-family__settings-sidebar>a{display:flex!important;align-items:center!important;gap:12px!important;padding:12px 13px!important;border-radius:10px!important;color:#355745!important;font-weight:650!important;text-decoration:none!important;font-size:.92rem!important}
+body .bh3-family__settings-sidebar>a:hover,body .bh3-family__settings-sidebar>a:focus-visible{background:#e8f3ec!important;color:#1e5c41!important}
+.bh3-family__settings-sidebar>a span{display:inline-flex;width:23px;justify-content:center;font-size:1.12rem}
+.bh3-family__sidebar-footer{padding:13px 9px 3px;margin-top:8px;border-top:1px solid #e6ede7;font-size:.76rem;color:#78877c}
+.bh3-family__settings-page [id^=bh3-]{scroll-margin-top:32px}
+@media(max-width:850px){body .bh3-family__settings-page .bh3-family__settings-layout{grid-template-columns:1fr!important;gap:15px!important}body .bh3-family__settings-page .bh3-family__settings-sidebar{position:static;flex-direction:row;flex-wrap:wrap;gap:6px;padding:12px}body .bh3-family__settings-page .bh3-family__sidebar-heading{width:100%;padding:4px 8px 9px;margin:0}body .bh3-family__settings-sidebar>a{flex:1 1 auto}body .bh3-family__sidebar-footer{display:none}}
+
+/* Family settings: sidebar + one vertical content column (never split cards). */
+body .bh3-family__settings-page .bh3-family__settings-content > .bh3-family__grid.bh3-family__private{display:flex!important;flex-direction:column!important;flex-wrap:nowrap!important;grid-template-columns:minmax(0,1fr)!important;align-items:stretch!important;gap:22px!important;width:100%!important;max-width:100%!important}
+body .bh3-family__settings-page .bh3-family__settings-content > .bh3-family__grid.bh3-family__private > article{display:block!important;flex:none!important;width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;margin:0!important}
+body .bh3-family__settings-page .bh3-family__settings-content{display:block!important;min-width:0!important}
+@media(max-width:850px){body .bh3-family__settings-page .bh3-family__settings-content > .bh3-family__grid.bh3-family__private{width:100%!important}}
