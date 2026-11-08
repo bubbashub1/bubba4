@@ -62,3 +62,5 @@ jobs:
         run: php tests/bh4-activity-api-contract-test.php
       - name: Isolated BH4 directory adapter fixtures
         run: php tests/bh4-directory-adapter-test.php
+      - name: Isolated BH4 directory repository bridge fixtures
+        run: php tests/bh4-directory-repository-bridge-test.php
