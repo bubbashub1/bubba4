@@ -80,3 +80,5 @@ jobs:
         run: php tests/bh4-directory-field-parity-test.php
       - name: Isolated BH4 directory scenario regression fixtures
         run: php tests/bh4-directory-scenarios-test.php
+      - name: Isolated BH4 legacy web filter bridge fixtures
+        run: php tests/bh4-directory-web-filters-test.php
