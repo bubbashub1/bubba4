@@ -855,6 +855,18 @@ final class BH_Marketplace_Settings_3 {
                 || ( $data['livemode'] ?? null ) !== false
                 || (int) ( $data['amount_total'] ?? -1 ) !== $parent_total
                 || ( $data['currency'] ?? '' ) !== 'gbp' ) {
+                if ( $bh4_recovery_enabled ) {
+                    $bh4_rejected = BH4_Checkout_Recovery_Record_Contract::transition(
+                        $bh4_attempt['record'], 'remote_rejected'
+                    );
+                    if ( ! empty( $bh4_rejected['ok'] ) ) {
+                        BH4_Checkout_Recovery_Option_Store::update_if_state(
+                            (int) $booking['id'], 'creating', $bh4_rejected['record']
+                        );
+                    }
+                    return new WP_Error( 'checkout_reconciliation_required',
+                        'Stripe did not return a verified Checkout session. Please contact support before retrying.' );
+                }
                 return new WP_Error( 'stripe_checkout_rejected', 'Stripe did not return a valid test Checkout session.' );
             }
             $saved = $wpdb->query( $wpdb->prepare(
@@ -863,6 +875,18 @@ final class BH_Marketplace_Settings_3 {
                 $data['id'], current_time( 'mysql', true ), (int) $booking['id']
             ) );
             if ( $saved !== 1 ) {
+                if ( $bh4_recovery_enabled ) {
+                    $bh4_unsaved = BH4_Checkout_Recovery_Record_Contract::transition(
+                        $bh4_attempt['record'], 'remote_timeout'
+                    );
+                    if ( ! empty( $bh4_unsaved['ok'] ) ) {
+                        BH4_Checkout_Recovery_Option_Store::update_if_state(
+                            (int) $booking['id'], 'creating', $bh4_unsaved['record']
+                        );
+                    }
+                    return new WP_Error( 'checkout_reconciliation_required',
+                        'Checkout may exist but could not be saved. Please contact support before retrying.' );
+                }
                 return new WP_Error( 'checkout_not_saved', 'Checkout session could not be saved; manual reconciliation required.' );
             }
             if ( $bh4_recovery_enabled ) {
