@@ -90,3 +90,5 @@ jobs:
         run: php tests/bh4-directory-combined-response-test.php
       - name: Isolated BH4 public directory map marker fixtures
         run: php tests/bh4-directory-map-markers-test.php
+      - name: Isolated BH4 plugin upgrade safety gate fixtures
+        run: php tests/bh4-plugin-upgrade-gate-test.php
