@@ -1,0 +1,34 @@
+name: BH4 safe preview install ZIP
+on:
+  push:
+    paths:
+      - 'bubbawp.php'
+      - '.github/workflows/bh4-preview-zip.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify isolated preview entry
+        run: |
+          php -l bubbawp.php
+          ! grep -Eq 'require(_once)?[[:space:]]+.*bubba-hub-manager' bubbawp.php
+          grep -Fq 'Plugin Name: Bubba Hub 4' bubbawp.php
+      - name: Build separate plugin ZIP (no legacy BH3 files)
+        run: |
+          mkdir -p dist/bubba4
+          cp bubbawp.php dist/bubba4/bubba4.php
+          cd dist
+          zip -qr bubba4-safe-preview.zip bubba4
+          unzip -t bubba4-safe-preview.zip
+          test "$(unzip -Z1 bubba4-safe-preview.zip | grep -c '^bubba4/bubba4.php$')" -eq 1
+          test "$(unzip -Z1 bubba4-safe-preview.zip | grep -c 'bubba-hub-manager')" -eq 0
+      - name: Upload installable safe preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: bubba4-safe-preview-install
+          path: dist/bubba4-safe-preview.zip
+          if-no-files-found: error
