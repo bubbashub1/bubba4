@@ -83,6 +83,8 @@ jobs:
         run: php tests/bh4-fee-and-expiry-source-test.php
       - name: Isolated reservation expiry decisions
         run: php tests/bh4-reservation-expiry-contract-test.php
+      - name: Read-only expiry candidate planner fixtures
+        run: php tests/bh4-expiry-candidate-planner-test.php
       - name: Isolated BH4 booking reference fixtures
         run: php tests/bh4-booking-reference-test.php
       - name: Isolated BH4 activity API contract fixtures
