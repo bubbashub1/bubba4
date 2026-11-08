@@ -751,16 +751,16 @@ final class BH_Marketplace_Settings_3 {
             return new WP_Error( 'hold_too_short', 'Checkout requires a longer capacity hold; no payment session created.' );
         }
         // Lock per booking; Stripe idempotency protects retries after network timeouts.
-        $lock = 'bh3_checkout_' . md5( $wpdb->prefix . ':' . $booking['id'] );
+        $lock = 'bh3_status_' . md5( $wpdb->prefix . ':' . $booking['id'] );
         if ( (int) $wpdb->get_var( $wpdb->prepare( 'SELECT GET_LOCK(%s, 5)', $lock ) ) !== 1 ) {
             return new WP_Error( 'checkout_busy', 'Checkout is already being prepared.' );
         }
         try {
             $current = $wpdb->get_row( $wpdb->prepare(
-                "SELECT payment_status,stripe_checkout_session_id,reservation_expires_at FROM `{$table}` WHERE id=%d LIMIT 1",
+                "SELECT booking_status,payment_status,stripe_checkout_session_id,reservation_expires_at FROM `{$table}` WHERE id=%d LIMIT 1",
                 (int) $booking['id']
             ), ARRAY_A );
-            if ( ! $current || $current['payment_status'] !== 'pending' || ! empty( $current['stripe_checkout_session_id'] )
+            if ( ! $current || $current['booking_status'] !== 'reserved' || $current['payment_status'] !== 'pending' || ! empty( $current['stripe_checkout_session_id'] )
                 || strtotime( $current['reservation_expires_at'] . ' UTC' ) < time() + 30 * MINUTE_IN_SECONDS ) {
                 return new WP_Error( 'checkout_state_changed', 'Reservation is no longer eligible for checkout.' );
             }
@@ -825,7 +825,7 @@ final class BH_Marketplace_Settings_3 {
             }
             $saved = $wpdb->query( $wpdb->prepare(
                 "UPDATE `{$table}` SET stripe_checkout_session_id=%s,updated_at=%s
-                 WHERE id=%d AND payment_status='pending' AND stripe_checkout_session_id IS NULL",
+                 WHERE id=%d AND booking_status='reserved' AND payment_status='pending' AND stripe_checkout_session_id IS NULL",
                 $data['id'], current_time( 'mysql', true ), (int) $booking['id']
             ) );
             if ( $saved !== 1 ) {
